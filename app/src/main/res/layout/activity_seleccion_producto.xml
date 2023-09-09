@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SeleccionProductoActivity">
+
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+
+
+        <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_marginBottom="20dp"
+                app:cardBackgroundColor="@color/nabvar"
+
+                >
+
+                <ImageView
+                    android:id="@+id/imclogo1"
+                    android:layout_width="120dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="start|center_vertical"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:src="@drawable/ic_logo1" />
+
+                <TextView
+                    android:layout_width="160dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="end|center_vertical"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="50dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="#Articulos"
+                    android:textSize="30dp"
+                    android:textStyle="bold" />
+
+
+            </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginBottom="20dp"
+            app:cardBackgroundColor="@color/nabvar"
+
+            >
+
+            <ImageView
+                android:id="@+id/imclogoSt"
+                android:layout_width="120dp"
+                android:layout_height="40dp"
+                android:layout_gravity="start|center_vertical"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:src="@drawable/ic_shopping_cart_plus" >
+
+
+            </ImageView>
+            <ImageView
+                android:id="@+id/imclogoLesst"
+                android:layout_width="120dp"
+                android:layout_height="40dp"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:src="@drawable/ic_shopping_cart_less" >
+
+
+            </ImageView>
+
+
+
+        </androidx.cardview.widget.CardView>
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewP"
+            android:layout_width="match_parent"
+            android:layout_height="450dp"
+            android:scrollbars="vertical"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+
+
+        <Button
+            android:id="@+id/btnSavePro"
+            android:layout_width="170dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
+            android:layout_marginVertical="16dp"
+            android:backgroundTint="@color/blue"
+            android:text="Guardar"
+            app:cornerRadius='10dp'
+
+            app:iconTint="@android:color/white" />
+
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

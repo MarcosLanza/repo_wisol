@@ -12,6 +12,9 @@ class InicioActivity : AppCompatActivity() {
 
         val btnPedidos = findViewById<Button>(R.id.btnPedidos)
         btnPedidos.setOnClickListener { navigateToIncio() }
+        val btnNewClient = findViewById<Button>(R.id.btnNewClient)
+
+        btnNewClient.setOnClickListener { navigateToNewClient() }
 
     }
     private fun navigateToIncio() {
@@ -19,5 +22,10 @@ class InicioActivity : AppCompatActivity() {
         startActivity(intent)
 
 
+    }
+
+    private fun navigateToNewClient(){
+        val intent = Intent(this, NewClientActivity::class.java)
+        startActivity(intent)
     }
 }

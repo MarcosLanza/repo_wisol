@@ -9,14 +9,16 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="76dp"
+        tools:layout_editor_absoluteY="0dp">
 
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="70dp"
-            app:cardBackgroundColor="@color/nabvar"
             android:layout_marginBottom="46dp"
+            app:cardBackgroundColor="@color/nabvar"
 
             >
 
@@ -33,36 +35,117 @@
             <TextView
                 android:layout_width="110dp"
                 android:layout_height="50dp"
-                android:text="Pedidos"
-                android:textStyle="bold"
-                android:textSize="30dp"
                 android:layout_gravity="end|center_vertical"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="50dp"
                 android:layout_marginBottom="8dp"
-                />
+                android:text="Pedidos"
+                android:textSize="30dp"
+                android:textStyle="bold" />
 
 
         </androidx.cardview.widget.CardView>
 
 
-
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="390dp"
             android:scrollbars="vertical"
+
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
         </androidx.recyclerview.widget.RecyclerView>
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fabEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_edit"
+                app:backgroundTint="@color/blue"
+                app:cornerRadius="0dp"
+                app:tint="@color/white"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/fabUpdate"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fabUpdate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_update"
+                app:backgroundTint="@color/blue_o"
+                app:cornerRadius="0dp"
+                app:tint="@color/white"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@id/fabEdit"
+                app:layout_constraintEnd_toStartOf="@id/fabDelete"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fabDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_elete"
+                app:backgroundTint="@color/red"
+                app:cornerRadius="0dp"
+                app:tint="@color/white"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@id/fabUpdate"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="40dp">
+
+            <Button
+                android:id="@+id/btnBackPedido"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Atrás"
+                android:backgroundTint="@color/blue"
+                app:cornerRadius="10dp"
+                app:iconTint="@android:color/white"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btnNewPedido"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/btnNewPedido"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Nuevo"
+                android:backgroundTint="@color/blue"
+                app:cornerRadius="10dp"
+                app:iconTint="@android:color/white"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintStart_toEndOf="@+id/btnBackPedido"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     </androidx.appcompat.widget.LinearLayoutCompat>
-
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

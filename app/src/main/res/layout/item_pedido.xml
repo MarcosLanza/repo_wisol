@@ -1,30 +1,61 @@
-<LinearLayout
+<!-- item_pedido.xml -->
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:padding="16dp">
+    android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/txtId"
+    <TableLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="16dp">
 
-    <TextView
-        android:id="@+id/txtUsuario"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_marginStart="8dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        <!-- Encabezado de la tabla -->
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
 
-    <TextView
-        android:id="@+id/txtEstado"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_marginStart="8dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
-</LinearLayout>
+            <!-- Columna 1 -->
+            <TextView
+                android:id="@+id/txtId"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="ID"
+                android:textColor="@android:color/white"
+                android:padding="8dp"
+                android:textStyle="bold"
+                android:gravity="center"/>
+
+            <!-- Columna 2 -->
+            <TextView
+                android:id="@+id/txtUsuario"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Cliente"
+                android:textColor="@android:color/white"
+                android:padding="8dp"
+                android:textStyle="bold"
+                android:gravity="center"/>
+
+            <!-- Columna 3 -->
+            <TextView
+                android:id="@+id/txtEstado"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Estado"
+                android:textColor="@android:color/white"
+                android:padding="8dp"
+                android:textStyle="bold"
+                android:gravity="center"/>
+        </TableRow>
+    </TableLayout>
+
+    <!-- Resto de tu contenido, si lo tienes -->
+</androidx.constraintlayout.widget.ConstraintLayout>

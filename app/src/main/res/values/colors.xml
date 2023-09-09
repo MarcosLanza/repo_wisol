@@ -4,4 +4,13 @@
     <color name="white">#FFFFFFFF</color>
     <color name="blue">#03A9F4</color>
     <color name="nabvar">#A8A8A8</color>
+    <color name="red">#F44336</color>
+    <color name="blue_o">#3D4A91</color>
+    <color name="grey">#CFCFE8</color>
+    <color name="white1">#CDC9C9</color>
+    <color name="green">#8BC34A</color>
+
+
+
+
 </resources>

@@ -1,7 +1,9 @@
 package com.wisol.wisolapp
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,10 +28,32 @@ class PedidosActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pedidos)
-         getUsers()
+
+        val btnBack = findViewById<Button>(R.id.btnBackPedido)
+        btnBack.setOnClickListener { navigateToBackWelcome() }
+
+        val btnPedidosNew = findViewById<Button>(R.id.btnNewPedido)
+        btnPedidosNew.setOnClickListener { navigateToSlectionClient() }
+
+        getUsers()
+
 
 
     }
+
+
+    private fun navigateToBackWelcome(){
+        val intent = Intent(this, InicioActivity::class.java)
+        startActivity(intent)
+    }
+    private fun navigateToSlectionClient() {
+        val intent = Intent(this, SeleccionClienteActivity::class.java)
+        startActivity(intent)
+
+
+    }
+
+
 
     /**
      * Obtenemos los datos de la hoja de users
@@ -69,9 +93,11 @@ class PedidosActivity : AppCompatActivity() {
                     adapter.RecyclerViewAdapter(arrayList, this)
 
                     recycler.hasFixedSize()
-                    recycler.layoutManager = LinearLayoutManager(this)
                     recycler.adapter = adapter
+
+                    recycler.layoutManager = LinearLayoutManager(this)
                 }
+
 
 
 
@@ -83,6 +109,7 @@ class PedidosActivity : AppCompatActivity() {
         )
         queue.add(jsonObjectRequest)
     }
+
 
 
 
