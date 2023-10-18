@@ -1,6 +1,3 @@
-
-
-
 package com.wisol.wisolapp
 
 import android.content.Intent

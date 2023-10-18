@@ -10,8 +10,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 
-class RecyclerViewAdapterProductos : RecyclerView.Adapter<RecyclerViewAdapterProductos.ViewHolder>() {
-
+class RecyclerViewAdapterProductosB2 : RecyclerView.Adapter<RecyclerViewAdapterProductosB2.ViewHolder>() {
     var productos: MutableList<ProductosModel> = ArrayList()
 
     lateinit var context: Context
@@ -80,11 +79,11 @@ class RecyclerViewAdapterProductos : RecyclerView.Adapter<RecyclerViewAdapterPro
                 val editTextTag = holder.cnt.tag as String
                 println("este es el new text " + newText)
                 // Notificar a la actividad principal con el identificador único y el nuevo texto
-                (context as? SeleccionProductoActivity)?.onEditTextChanged(editTextTag, newText)
+                (context as? SeleccionProductoB2Activity)?.onEditTextChanged(editTextTag, newText)
                 for (i in 0 until selectedItems.size) {
                     if (selectedItems[i].id_producto == idP && newText != "0") {
                         selectedItems[i].cnt = newText // Reemplazar el elemento
-                        (context as? SeleccionProductoActivity)?.save(selectedItems)
+                        (context as? SeleccionProductoB2Activity)?.save(selectedItems)
                         println("si llegue aqui")
                         break // Salir del bucle una vez que se haya realizado la edición
                     }
@@ -121,13 +120,13 @@ class RecyclerViewAdapterProductos : RecyclerView.Adapter<RecyclerViewAdapterPro
             if (selectedItems.contains(producto)) {
                 // Si el elemento ya está seleccionado, deseléctionalo
                 selectedItems.remove(producto)
-                (context as? SeleccionProductoActivity)?.reportes(selectedItems)
+                (context as? SeleccionProductoB2Activity)?.reportes(selectedItems)
                 holder.cnt.text = "0"
                 holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.red))
             } else {
                 // Si el elemento no está seleccionado, selecciónalo
                 selectedItems.add(producto)
-                (context as? SeleccionProductoActivity)?.reportes(selectedItems)
+                (context as? SeleccionProductoB2Activity)?.reportes(selectedItems)
                 holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.blue))
                 holder.cnt.text = "0"
                 idP = producto.id_producto

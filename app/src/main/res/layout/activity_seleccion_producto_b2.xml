@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SeleccionProductoActivity">
+    tools:context=".SeleccionProductoB2Activity">
 
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -13,36 +13,36 @@
         android:orientation="vertical">
 
         <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="80dp"
-                android:layout_marginBottom="20dp"
-                app:cardBackgroundColor="@color/nabvar"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginBottom="20dp"
+            app:cardBackgroundColor="@color/nabvar"
 
-                >
+            >
 
-                <ImageView
-                    android:id="@+id/imclogo1"
-                    android:layout_width="120dp"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="start|center_vertical"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:src="@drawable/ic_logo1" />
+            <ImageView
+                android:id="@+id/imclogo1"
+                android:layout_width="120dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="start|center_vertical"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:src="@drawable/ic_logo1" />
 
-                <TextView
-                    android:layout_width="160dp"
-                    android:layout_height="50dp"
-                    android:layout_gravity="end|center_vertical"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="50dp"
-                    android:layout_marginBottom="8dp"
-                    android:text="#Articulos"
-                    android:textSize="30dp"
-                    android:textStyle="bold" />
+            <TextView
+                android:layout_width="160dp"
+                android:layout_height="50dp"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="50dp"
+                android:layout_marginBottom="8dp"
+                android:text="#ArticulosB2"
+                android:textSize="30dp"
+                android:textStyle="bold" />
 
 
-            </androidx.cardview.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
@@ -99,6 +99,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -106,7 +107,7 @@
             android:layout_margin="16dp">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/etFilterComentarioProducto"
+                android:id="@+id/etComentarioProducto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Comentario">
@@ -119,12 +120,11 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="550dp"
+            android:layout_height="600dp"
             android:orientation="vertical">
             <TableLayout
                 android:layout_width="match_parent"
@@ -183,7 +183,7 @@
                     android:background="@android:color/white" />
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerViewP"
+                    android:id="@+id/recyclerViewPB"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scrollbars="vertical"
@@ -395,6 +395,7 @@
 
 
 
+
         <Button
             android:id="@+id/btnSavePro"
             android:layout_width="170dp"
@@ -411,4 +412,6 @@
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
+
 </androidx.constraintlayout.widget.ConstraintLayout>
+

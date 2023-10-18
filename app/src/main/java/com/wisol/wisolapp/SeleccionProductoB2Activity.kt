@@ -25,7 +25,7 @@ import java.io.IOException
 import java.lang.reflect.Type
 import java.util.Calendar
 
-class SeleccionProductoActivity : AppCompatActivity() {
+class SeleccionProductoB2Activity : AppCompatActivity() {
 
     var contador = 0
     var contadorSave = 0
@@ -61,9 +61,9 @@ class SeleccionProductoActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_seleccion_producto)
-        idProducto = intent.extras?.getString("ID_Producto").orEmpty()
-        idClient = intent.extras?.getString("ID_Client").orEmpty()
+        setContentView(R.layout.activity_seleccion_producto_b2)
+        idProducto = intent.extras?.getString("ID_ProductoB").orEmpty()
+        idClient = intent.extras?.getString("ID_ClientB").orEmpty()
         contadora = intent.extras?.getString("CONT").orEmpty()
         println("este es el id del cliente"+idClient)
         leerproducts()
@@ -118,12 +118,12 @@ class SeleccionProductoActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {
                 // Este método se llama después de que el texto cambie
             }
-            })
+        })
 
 
         val btnSave = findViewById<Button>(R.id.btnSavePro)
         btnSave.setOnClickListener { navigateToSaveProduct() }
-         val imcSt = findViewById<ImageView>(R.id.imclogoLesst)
+        val imcSt = findViewById<ImageView>(R.id.imclogoSt)
 
         imcSt.setOnClickListener { changeViewPro() }
 
@@ -134,20 +134,19 @@ class SeleccionProductoActivity : AppCompatActivity() {
     }
 
     private fun changeViewPro(){
-        val intent = Intent(this, SeleccionProductoB2Activity::class.java)
+        val intent = Intent(this, SeleccionProductoActivity::class.java)
         intent.putExtra("ID_ProductoB", idProducto)
-        intent.putExtra("ID_ClientB", idClient)
-        startActivity(intent)
+        onBackPressed()
     }
     private fun navigateToSaveProduct(){
         if (contador == 1){
             if (contadorSave == 0){
-                 guardarPedido()
+                guardarPedido()
             }else{
                 editarPedido()
             }
         }
-            // Crea el archivo y escribe el JSON en él
+        // Crea el archivo y escribe el JSON en él
 
         val intent = Intent(this, PedidosActivity::class.java)
         startActivity(intent)
@@ -250,7 +249,7 @@ class SeleccionProductoActivity : AppCompatActivity() {
 
     }
     private fun updatePrecio(){
-        
+
         total = cntGlobal.toDouble() * preze
         precioP.text = total.toString()
 
@@ -266,7 +265,7 @@ class SeleccionProductoActivity : AppCompatActivity() {
         val año = calendario.get(Calendar.YEAR)
         val mes = calendario.get(Calendar.MONTH) + 1  // Los meses comienzan desde 0, por lo que sumamos 1
         val dia = calendario.get(Calendar.DAY_OF_MONTH)
-       contador = 1
+        contador = 1
         for (lista in selectedItems){
             lista.idPedido = "$hora$minutos$segundos"
             lista.fecha = "$dia/$mes/$año"
@@ -334,7 +333,7 @@ class SeleccionProductoActivity : AppCompatActivity() {
                         record[15],
                         record[16]
                     )
-                    if(product.tipo == "TERMINADO"){
+                    if(product.tipo == "DEVOLUCION"){
                         if (product.id_cliente == idProducto && filtro == null) {
                             addProduct(arrayList, product)
                         } else if (product.id_cliente == idClient && filtro == null) {
@@ -360,8 +359,8 @@ class SeleccionProductoActivity : AppCompatActivity() {
         }
 
         // Inicializar RecyclerView y su adaptador
-        val recycler: RecyclerView = findViewById(R.id.recyclerViewP)
-        val adapter: RecyclerViewAdapterProductos = RecyclerViewAdapterProductos()
+        val recycler: RecyclerView = findViewById(R.id.recyclerViewPB)
+        val adapter: RecyclerViewAdapterProductosB2 = RecyclerViewAdapterProductosB2()
         adapter.RecyclerViewAdapter(arrayList, this)
         recycler.hasFixedSize()
         recycler.adapter = adapter
