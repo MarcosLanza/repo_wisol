@@ -30,6 +30,10 @@ import java.io.IOException
 class InicioActivity : AppCompatActivity() {
 
     var contador = 0
+    var usu: String? = ""
+
+
+
 
     val arrayListE: MutableList<PedidosModel> = ArrayList()
     private lateinit var btnCirculo: FloatingActionButton
@@ -38,6 +42,9 @@ class InicioActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_inicio)
+
+         usu = intent.extras?.getString("ID_USUARIO").orEmpty()
+
 
         val btnPedidos = findViewById<Button>(R.id.btnPedidos)
         btnPedidos.setOnClickListener { navigateToIncio() }
@@ -48,12 +55,13 @@ class InicioActivity : AppCompatActivity() {
         btnCirculo = findViewById<FloatingActionButton>(R.id.flsincronizar)
 
         btnSubirPediddo.setOnClickListener { subirDrivePedido() }
-        btnout.setOnClickListener { out() }
+        btnout.setOnClickListener {  }
         btnSincronizar.setOnClickListener { sincronizar() }
 
         btnNewClient.setOnClickListener { navigateToNewClient() }
         geto()
         changeCOlorBtn()
+        leercsvUser()
 
     }
     private fun changeCOlorBtn(){
@@ -79,14 +87,13 @@ class InicioActivity : AppCompatActivity() {
     }
 
     private fun out() {
-        val intent = Intent(this, SolicitudCreditoActivity::class.java)
-        startActivity(intent)
+
 
 
     }
 
     private fun navigateToNewClient(){
-        val intent = Intent(this, NewClientActivity::class.java)
+        val intent = Intent(this, SolicitudCreditoActivity::class.java)
         startActivity(intent)
     }
 
@@ -100,7 +107,7 @@ class InicioActivity : AppCompatActivity() {
     private fun sincronizarUsers(){
         val usuarios: MutableList<UsersModel> = mutableListOf()
 
-        val url = "https://script.google.com/macros/s/AKfycbx614cu1R5lWtnrGcom7pDvY4guzPVWvWcYiHsKgM8R0tGZzMRg-B7SJ4J1lIzo1pdmCQ/exec?function=doGet&nombreArchivo=users.csv"
+        val url = "https://script.google.com/macros/s/AKfycbykgrf2MAkYOrlcgyupiA0laVPYM845yx0Tdj-qfFXcHeo7qwFNs_annyEzDwgY9UhF/exec?function=doGet&nombreArchivo=matrices_seguridad_usuarios_20231021_203555.csv"
         val client = OkHttpClient()
         val request = Request.Builder()
             .url(url)
@@ -249,6 +256,11 @@ class InicioActivity : AppCompatActivity() {
 
             }
             csvReader.close()
+            for (use in usersList){
+                println("wewona "+use.correo)
+            }
+
+
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -260,7 +272,7 @@ class InicioActivity : AppCompatActivity() {
         val productos: MutableList<ProductsModel> = mutableListOf()
 
         val url =
-            "https://script.google.com/macros/s/AKfycbx614cu1R5lWtnrGcom7pDvY4guzPVWvWcYiHsKgM8R0tGZzMRg-B7SJ4J1lIzo1pdmCQ/exec?function=doGet&nombreArchivo=matrices_productos_precios_20230905_181449.csv"
+            "https://script.google.com/macros/s/AKfycbykgrf2MAkYOrlcgyupiA0laVPYM845yx0Tdj-qfFXcHeo7qwFNs_annyEzDwgY9UhF/exec?function=doGet&nombreArchivo=matrices_productos_precios_20231021_203555.csv"
         val client = OkHttpClient()
         val request = Request.Builder()
             .url(url)
@@ -322,28 +334,53 @@ class InicioActivity : AppCompatActivity() {
                                 val ventaAct = fila[14]
                                 val bono = fila[15]
                                 val minimo = fila[16]
+                                println("usu = $vendedor + $usu")
+                                if (vendedor == usu){
+                                    println("usuario final $usu")
+                                    val productModel = ProductsModel(
+                                        vendedor,
+                                        idCliente,
+                                        descCliente,
+                                        idProducto,
+                                        descProducto,
+                                        marca,
+                                        tipo,
+                                        precio,
+                                        descuento,
+                                        tipoImpuesto,
+                                        tipoTarifa,
+                                        impuesto,
+                                        ventaTrim,
+                                        ventaAnt,
+                                        ventaAct,
+                                        bono,
+                                        minimo
+                                    )
 
-                                val productModel = ProductsModel(
-                                    vendedor,
-                                    idCliente,
-                                    descCliente,
-                                    idProducto,
-                                    descProducto,
-                                    marca,
-                                    tipo,
-                                    precio,
-                                    descuento,
-                                    tipoImpuesto,
-                                    tipoTarifa,
-                                    impuesto,
-                                    ventaTrim,
-                                    ventaAnt,
-                                    ventaAct,
-                                    bono,
-                                    minimo
-                                )
+                                    productos.add(productModel)
+                                }else if(usu == "MCORDERO"){
+                                    val productModel = ProductsModel(
+                                        vendedor,
+                                        idCliente,
+                                        descCliente,
+                                        idProducto,
+                                        descProducto,
+                                        marca,
+                                        tipo,
+                                        precio,
+                                        descuento,
+                                        tipoImpuesto,
+                                        tipoTarifa,
+                                        impuesto,
+                                        ventaTrim,
+                                        ventaAnt,
+                                        ventaAct,
+                                        bono,
+                                        minimo
+                                    )
+                                    productos.add(productModel)
+                                }
 
-                                productos.add(productModel)
                             }
 
                             // De aquí en adelante, después de procesar todos los datos, crea el archivo CSV
@@ -462,56 +499,88 @@ class InicioActivity : AppCompatActivity() {
     private fun subirDrivePedido(){
         val scriptUrl = "https://script.google.com/macros/s/AKfycbzKmqjG7A7ZjZIXsrCbGPmORumqjmmWQqbgObEd4f63VT5JwvoXMuGPGWZHRaSESNARvg/exec?function=doPost&nombreArchivo=1234_20230901.csv"
 
-        for (lista in arrayListE){
-            lista.vendedor
-            println("este vendeor ${lista.estado}")
-            if (lista.estado == "cerrado"){
-                println("este vendeor cerrado ${lista.vendedor}")
-                // Crear un objeto JSON con los datos que deseas enviar
-                val jsonData = """
-                {
-                   "nombreArchivo": "1234_20230901.csv",
-                   "nuevosDatos": ["${lista.numPedido};${lista.vendedor};${lista.id_cliente};${lista.desc_producto};${lista.marca};${lista.tipo};${lista.precio};${lista.cnt};${lista.estado};${lista.fecha};${lista.codigo_producto};${lista.comentario}"]
-                }
-                """.trimIndent()
+        val client = OkHttpClient()
 
-                        // Convierte el objeto JSON a una cadena
-                val jsonRequestBody = jsonData.toRequestBody("application/json".toMediaType())
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                for (lista in arrayListE) {
+                    val poducto = lista.codigo_producto
+                    if (lista.estado == "cerrado") {
+                        val jsonData = """
+                        {
+                           "nombreArchivo": "1234_20230901.csv",
+                           "nuevosDatos": ["${lista.numPedido};${lista.vendedor};${lista.id_cliente};${lista.desc_producto};${lista.desc_producto};${lista.marca};${lista.tipo};${lista.precio};${lista.cnt};${lista.estado};${lista.fecha};${lista.codigo_producto};${lista.comentario}"]
+                        }
+                    """.trimIndent()
 
-                // Crea la solicitud POST
-                val request = Request.Builder()
-                    .url(scriptUrl)
-                    .post(jsonRequestBody)
-                    .build()
+                        val jsonRequestBody = jsonData.toRequestBody("application/json".toMediaType())
 
-                // Crea un cliente OkHttp
-                val client = OkHttpClient()
+                        val request = Request.Builder()
+                            .url(scriptUrl)
+                            .post(jsonRequestBody)
+                            .build()
 
-                // Utiliza una coroutine para realizar la solicitud en un hilo separado
-                GlobalScope.launch(Dispatchers.IO) {
-                    try {
-                        // Ejecuta la solicitud de forma asíncrona
                         val response = client.newCall(request).execute()
 
-                        // Verifica si la solicitud fue exitosa y maneja la respuesta
                         if (response.isSuccessful) {
                             val responseBody = response.body?.string()
-                            // Maneja la respuesta del script de Google Apps aquí
-                            println(responseBody)
+                            println("Elemento subido con éxito: $responseBody")
+                            editarPedido(poducto)
                         } else {
-                            // Maneja errores aquí
-                            println("Error en la solicitud POST")
+                            println("Error en la solicitud POST para el elemento: ${lista.numPedido}")
                         }
-                    } catch (e: IOException) {
-                        // Maneja excepciones de red aquí
-                        println("Error de red: ${e.message}")
                     }
                 }
+            } catch (e: IOException) {
+                println("Error de red: ${e.message}")
             }
         }
 
+    }
+    private fun editarPedido(poducto: String) {
+        val rutaArchivo = File(applicationContext.filesDir, "pedidos.txt")
+
+        // Verificar si el archivo existe
+        if (!rutaArchivo.exists()) {
+            println("El archivo no existe.")
+            return
+        }
+
+        // Leer el contenido del archivo TXT
+        val contenido = rutaArchivo.readText()
+
+        try {
+            // Convertir el contenido JSON a una lista de objetos
+            val listaDeObjetos = JSONArray(contenido)
+
+            // ID del pedido que deseas eliminar
+            val idPedidoAEliminar = poducto // Reemplaza con el ID que necesitas eliminar
+            println("pedido a eliminar $poducto")
+            // Eliminar objetos con el ID deseado
+            val objetosFiltrados = JSONArray()
+            for (i in 0 until listaDeObjetos.length()) {
+                val objeto = listaDeObjetos.getJSONObject(i)
+                val idPedido = objeto.getString("codigo_producto")
 
 
+                if (idPedido != idPedidoAEliminar) {
+                    objetosFiltrados.put(objeto)
+                    println("estos son los filtros"+objetosFiltrados)
+                }
+            }
+
+            // Convertir la lista de objetos filtrados a JSON
+            val nuevoContenido = objetosFiltrados.toString()
+
+            // Escribir el nuevo contenido en el archivo TXT
+            rutaArchivo.writeText(nuevoContenido)
+
+            println("Objeto con ID $idPedidoAEliminar eliminado exitosamente.")
+
+
+        } catch (e: Exception) {
+            println("Error al procesar el archivo: ${e.message}")
+        }
     }
 
     private fun geto(){
@@ -546,6 +615,7 @@ class InicioActivity : AppCompatActivity() {
                     val codigo_producto = pedido.getString("codigo_producto")
                     val comentario = pedido.getString("comentario")
                     val idPedido = pedido.getString("idPedido")
+
 
                     arrayListE.add(PedidosModel(
                         numPedido = numPedido,

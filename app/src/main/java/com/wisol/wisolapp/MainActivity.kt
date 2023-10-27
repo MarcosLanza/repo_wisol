@@ -15,18 +15,16 @@ import okhttp3.Response
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
+import java.security.MessageDigest
 
 
 class MainActivity : AppCompatActivity() {
 
-    var SPREAD_SHEET_ID = "19rMYY91d0E_QsgwoddgCIv89omoEgwos4XHatRP5baA"
-    var sheetInjasonUrl = "https://script.google.com/macros/s/AKfycbyTrI_UpxGxVEki9NPM-ZRkdG_kRr101alzMM78NkKfZjUvWgiGqLBrzpaBlxafsLLQ/exec?spreadsheetId=1QUEQ5jhqDUHOXstgC7i8uLuYXWD93swMdhzGGpyMmZM&sheet=matriz_seguridad_usuarios_20230818_172800"
-    var TABLE_USERS = "personas"
-
-    var LOG_TAG = "kikopalomares"
-
     var nombreBuscado = ""
     var passwordBuscada = ""
+    var passwordCodificado = ""
+    var idUsuario : String? = ""
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,30 +33,44 @@ class MainActivity : AppCompatActivity() {
         val inputName = findViewById<TextInputEditText>(R.id.inputUser)
         val inputPass = findViewById<TextInputEditText>(R.id.inputPass)
 
+
         btnStart.setOnClickListener {
             nombreBuscado = inputName.text.toString()
-            println("Hola"+ nombreBuscado)
             passwordBuscada = inputPass.text.toString()
+            passwordCodificado = sha256(passwordBuscada)
             realizarSolicitudHTTP()
-
-
-
-
 
         }
 
 
     }
+    fun sha256(text: String): String {
+        val bytes = text.toByteArray(Charsets.UTF_8)
+        val md = MessageDigest.getInstance("SHA-256")
+        val digest = md.digest(bytes)
+
+        // Convierte el resultado en una representación hexadecimal
+        val hexChars = CharArray(digest.size * 2)
+        for (i in digest.indices) {
+            val v = digest[i].toInt() and 0xFF
+            hexChars[i * 2] = "0123456789ABCDEF"[v ushr 4]
+            hexChars[i * 2 + 1] = "0123456789ABCDEF"[v and 0x0F]
+        }
+
+        return String(hexChars)
+    }
 
 
     private fun navigateToIncio() {
         val intent = Intent(this, InicioActivity::class.java)
+        intent.putExtra("ID_USUARIO", idUsuario)
+        println("estoy mandando esto $idUsuario")
         startActivity(intent)
 
     }
 
     fun realizarSolicitudHTTP() {
-        val url = "https://script.google.com/macros/s/AKfycbx614cu1R5lWtnrGcom7pDvY4guzPVWvWcYiHsKgM8R0tGZzMRg-B7SJ4J1lIzo1pdmCQ/exec?function=doGet&nombreArchivo=users.csv"
+        val url = "https://script.google.com/macros/s/AKfycbykgrf2MAkYOrlcgyupiA0laVPYM845yx0Tdj-qfFXcHeo7qwFNs_annyEzDwgY9UhF/exec?function=doGet&nombreArchivo=matrices_seguridad_usuarios_20231021_203555.csv"
         val client = OkHttpClient()
         val request = Request.Builder()
             .url(url)
@@ -112,11 +124,18 @@ class MainActivity : AppCompatActivity() {
                                     val roleId = fila[8]
                                     val role = fila[9]
                                     val permiso = fila[10]
-                                    if (usuario == nombreBuscado && password == passwordBuscada){
-                                        println("Hola muchachos")
+                                    println("esta es la password fila " +password+" "+passwordCodificado+" NAME"+nombreBuscado)
+                                    if (usuario == nombreBuscado && password == passwordCodificado){
+                                        println("password es "+password)
+                                        idUsuario = usuario
+                                        println("Hola muchachos $usuario")
                                         navigateToIncio()
                                     }
+
                                     println("Bye Muchachos")
+                                    println("password es "+password+" "+nombre)
+                                    navigateToIncio()
+
                                 }
 
 
@@ -142,55 +161,6 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
-/*
-    private fun getUsers() {
-        val queue = Volley.newRequestQueue(this)
-
-        val jsonObjectRequest = JsonObjectRequest(
-            Request.Method.GET, sheetInjasonUrl, null,
-            { response ->
-                Log.i(LOG_TAG, "Response is: $response")
-
-                val gson = Gson()
-                val jsonObject: JsonObject= gson.fromJson(response.toString(), JsonObject::class.java)
-
-                val personasArray: JSONArray = response.getJSONArray("personas")
-
-
-
-                // Buscar en el array 'personas' por nombre y contraseña
-                for (i in 0 until personasArray.length()) {
-                    val persona: JSONObject = personasArray.getJSONObject(i)
-                    val nombre = persona.getString("USUARIO")
-                    val password = persona.getString("PASSWORD")
-
-                    if (nombre == nombreBuscado && password == passwordBuscada) {
-                        println("Nombre y contraseña válidos")
-                        navigateToIncio()
-                        nombreBuscado = ""
-                        passwordBuscada = ""
-                        // Realizar acciones adicionales si la validación es exitosa
-                        break
-                    }else{
-                        // Si llegas aquí, no se encontró una coincidencia válida
-                        println("Nombre o contraseña no válidos")
-
-                        // Ahora tienes un objeto JSON (jsonObject) que contiene el arreglo JSON de "personas"
-                    }
-                }
-
-
-
-            },
-            { error ->
-                error.printStackTrace()
-                Log.e(LOG_TAG, "That didn't work!")
-            }
-        )
-
-        queue.add(jsonObjectRequest)
-
-    }*/
 
 
 

@@ -11,7 +11,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.opencsv.CSVReader
+import java.io.FileNotFoundException
 import java.io.FileReader
+import java.io.IOException
 
 class SeleccionClienteActivity : AppCompatActivity() {
 
@@ -23,6 +25,7 @@ class SeleccionClienteActivity : AppCompatActivity() {
     var idProducto: String? = null
 
 
+
     private lateinit var editText: TextInputEditText
     private lateinit var editCodigo: TextInputEditText
 
@@ -31,6 +34,9 @@ class SeleccionClienteActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_seleccion_cliente)
+
+        val btnCLear = findViewById<Button>(R.id.btnClear)
+        btnCLear.setOnClickListener { clear() }
 
         val btnBackPedidos = findViewById<Button>(R.id.btnBack)
         btnBackPedidos.setOnClickListener { navigateToBackPedido() }
@@ -109,15 +115,22 @@ class SeleccionClienteActivity : AppCompatActivity() {
 
 
     }
+    private fun clear(){
+        editCodigo.setText("")
+        editText.setText("")
+    }
 
     private fun navigateToBackPedido(){
         val intent = Intent(this, PedidosActivity::class.java)
         startActivity(intent)
     }
     private fun navigateToProductos() {
-        val intent = Intent(this, SeleccionProductoActivity::class.java)
-        intent.putExtra("ID_Producto", idProducto)
-        startActivity(intent)
+        if (idProducto != null){
+            val intent = Intent(this, SeleccionProductoActivity::class.java)
+            intent.putExtra("ID_Producto", idProducto)
+            startActivity(intent)
+
+        }
 
 
     }
@@ -130,12 +143,12 @@ class SeleccionClienteActivity : AppCompatActivity() {
         selected = ola
         idProducto = codigo
         editText.setText(selected)
-        if (codigo == null){
-            editCodigo.setText(codigoCo)
+        if (codigo != null){
+            editCodigo.setText(codigo)
 
         }
         filtro = selected
-       // filtroCodigo = selectedCo
+        filtroCodigo = selected
         getClients()
 
     }
@@ -146,53 +159,64 @@ class SeleccionClienteActivity : AppCompatActivity() {
 
         val arrayList: MutableList<ClientesProductosModel> = ArrayList()
 
-        val csvReader = CSVReader(FileReader(filePath))
-        // Leer la primera línea (encabezados) y descartarla
-        csvReader.readNext()
+        try {
+            val csvReader = CSVReader(FileReader(filePath))
+            // Leer la primera línea (encabezados) y descartarla
+            csvReader.readNext()
 
-        var record: Array<String>?
-        while (true) {
-            record = csvReader.readNext()
-            if (record == null) {
-                break
+            var record: Array<String>?
+            while (true) {
+                record = csvReader.readNext()
+                if (record == null) {
+                    break
+                }
+
+                val product = ProductsModel(
+                    record[0],
+                    record[1],
+                    record[2],
+                    record[3],
+                    record[4],
+                    record[5],
+                    record[6],
+                    record[7],
+                    record[8],
+                    record[9],
+                    record[10],
+                    record[11],
+                    record[12],
+                    record[13],
+                    record[14],
+                    record[15],
+                    record[16]
+                )
+
+                if (filterProduct(product)) {
+                    addCliente(arrayList, product)
+                }
             }
 
-            val product = ProductsModel(
-                record[0],
-                record[1],
-                record[2],
-                record[3],
-                record[4],
-                record[5],
-                record[6],
-                record[7],
-                record[8],
-                record[9],
-                record[10],
-                record[11],
-                record[12],
-                record[13],
-                record[14],
-                record[15],
-                record[16]
-            )
+            csvReader.close()
 
-            if (filterProduct(product)) {
-                addCliente(arrayList, product)
-            }
+            // Inicializar RecyclerView y su adaptador fuera del bucle while
+            val recycler: RecyclerView = findViewById(R.id.recyclerViewC)
+            val adapter: RecyclerViewAdapterClientes = RecyclerViewAdapterClientes()
+            adapter.RecyclerViewAdapterP(arrayList.distinctBy { it.id_cliente }.toMutableList(), this)
+
+            recycler.hasFixedSize()
+            recycler.adapter = adapter
+            recycler.layoutManager = LinearLayoutManager(this)
+        } catch (e: FileNotFoundException) {
+            // Manejo de excepción si el archivo no se encuentra
+            e.printStackTrace()
+            // Aquí puedes agregar tu lógica para manejar la falta del archivo
+        } catch (e: IOException) {
+            // Manejo de excepción en caso de error de lectura
+            e.printStackTrace()
+            // Aquí puedes agregar tu lógica para manejar errores de lectura del archivo
         }
-
-        csvReader.close()
-
-        // Inicializar RecyclerView y su adaptador fuera del bucle while
-        val recycler: RecyclerView = findViewById(R.id.recyclerViewC)
-        val adapter: RecyclerViewAdapterClientes = RecyclerViewAdapterClientes()
-        adapter.RecyclerViewAdapterP(arrayList.distinctBy { it.id_cliente }.toMutableList(), this)
-
-        recycler.hasFixedSize()
-        recycler.adapter = adapter
-        recycler.layoutManager = LinearLayoutManager(this)
     }
+
 
     private fun filterProduct(product: ProductsModel): Boolean {
         return when {
@@ -208,7 +232,7 @@ class SeleccionClienteActivity : AppCompatActivity() {
             selected == product.desc_cliente -> {
                 true
             }
-            filtroCodigo != null && product.id_producto.contains(filtroCodigo.toString(), ignoreCase = true) -> {
+            filtroCodigo != null && product.id_cliente.contains(filtroCodigo.toString(), ignoreCase = true) -> {
                 filtro = null
                 selected = null
 

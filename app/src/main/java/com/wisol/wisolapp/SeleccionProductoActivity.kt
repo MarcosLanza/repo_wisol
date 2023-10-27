@@ -30,6 +30,7 @@ class SeleccionProductoActivity : AppCompatActivity() {
     var contador = 0
     var contadorSave = 0
     var idPedido = ""
+    var idPedidoFinal: String? = ""
     var idProducto: String? = null
     var contadora: String? = ""
     var idClient = ""
@@ -42,8 +43,14 @@ class SeleccionProductoActivity : AppCompatActivity() {
     private lateinit var mesAnterior:TextView
     private lateinit var mesActual:TextView
     private lateinit var precioP:TextView
+    private lateinit var min:TextView
+    private lateinit var cantidadBono:TextView
+
+
+
 
     var cntGlobal = 0
+    var minimo = 0
     var preze:Double = 0.0
     var total:Double = 0.0
 
@@ -64,8 +71,8 @@ class SeleccionProductoActivity : AppCompatActivity() {
         setContentView(R.layout.activity_seleccion_producto)
         idProducto = intent.extras?.getString("ID_Producto").orEmpty()
         idClient = intent.extras?.getString("ID_Client").orEmpty()
+        idPedidoFinal = intent.extras?.getString("ID_Pedido").orEmpty()
         contadora = intent.extras?.getString("CONT").orEmpty()
-        println("este es el id del cliente"+idClient)
         leerproducts()
 
 
@@ -73,6 +80,11 @@ class SeleccionProductoActivity : AppCompatActivity() {
         mesAnterior = findViewById(R.id.tvMesAnteriror)
         mesActual = findViewById(R.id.tvMesActual)
         precioP = findViewById(R.id.tvPrecio)
+        min = findViewById(R.id.tvMin)
+        cantidadBono = findViewById(R.id.tvCantidadBono)
+
+
+
         editCodigo = findViewById<TextInputEditText>(R.id.inputFilterCodigoProducto)
 
         comentario = findViewById<TextInputEditText>(R.id.inputComentarioProducto)
@@ -134,30 +146,37 @@ class SeleccionProductoActivity : AppCompatActivity() {
     }
 
     private fun changeViewPro(){
-        val intent = Intent(this, SeleccionProductoB2Activity::class.java)
+        val intent = Intent(this, PedidosActivity::class.java)
         intent.putExtra("ID_ProductoB", idProducto)
         intent.putExtra("ID_ClientB", idClient)
+        intent.putExtra("ID_PedidoB", idPedidoFinal)
+        println("este es el id final $idPedidoFinal")
+
+
         startActivity(intent)
     }
     private fun navigateToSaveProduct(){
         if (contador == 1){
+            println("contsor save == $contadorSave")
             if (contadorSave == 0){
                  guardarPedido()
             }else{
+                println("hola estoy editando")
                 editarPedido()
             }
         }
             // Crea el archivo y escribe el JSON en él
 
-        val intent = Intent(this, PedidosActivity::class.java)
-        startActivity(intent)
+      changeViewPro()
 
     }
 
     private fun guardarPedido(){
+        println("vamos a guardar $selectedItemsA")
         val gson = Gson()
         for (lista in selectedItemsA){
             lista.comentario = textol.toString()
+
         }
         selectedItemsA = selectedItemsA
         val json = gson.toJson(selectedItemsA)
@@ -207,15 +226,17 @@ class SeleccionProductoActivity : AppCompatActivity() {
 
             // ID del pedido que deseas eliminar
             val idPedidoAEliminar = idPedido // Reemplaza con el ID que necesitas eliminar
-
+            println("pedido a eliminar $idPedido")
             // Eliminar objetos con el ID deseado
             val objetosFiltrados = JSONArray()
             for (i in 0 until listaDeObjetos.length()) {
                 val objeto = listaDeObjetos.getJSONObject(i)
                 val idPedido = objeto.getString("idPedido")
 
+
                 if (idPedido != idPedidoAEliminar) {
                     objetosFiltrados.put(objeto)
+                    println("estos son los filtros"+objetosFiltrados)
                 }
             }
 
@@ -233,21 +254,37 @@ class SeleccionProductoActivity : AppCompatActivity() {
             println("Error al procesar el archivo: ${e.message}")
         }
     }
+
     fun reportes(selectedItems: MutableList<ProductosModel>) {
         selectedItemsC = selectedItems
         if (selectedItemsC.isEmpty()){
             promedioTrim.text = "0"
+            mesActual.text = "0"
+            mesAnterior.text = "0"
+          //  bonoR.text = "0"
+            preze = 0.0
         }
         else{
             var pro = selectedItemsC.last()
             promedioTrim.text = pro.venta_trim
             mesActual.text = pro.venta_act
             mesAnterior.text = pro.venta_ant
+            minimo = pro.minimo.toInt()
             preze = pro.precio.toDouble()
+            min.text = minimo.toString()
+            cantidadBono.text = pro.bono
             updatePrecio()
 
         }
 
+    }
+    private fun updateBono(){
+        println("este es el bonus " +cntGlobal+" "+minimo)
+        try {
+        } catch (e: ArithmeticException) {
+            // Manejo de la excepción (división por cero)
+            // Puedes mostrar un mensaje de error o tomar alguna otra acción apropiada
+        }
     }
     private fun updatePrecio(){
         
@@ -268,7 +305,17 @@ class SeleccionProductoActivity : AppCompatActivity() {
         val dia = calendario.get(Calendar.DAY_OF_MONTH)
        contador = 1
         for (lista in selectedItems){
-            lista.idPedido = "$hora$minutos$segundos"
+            if (idPedidoFinal == ""){
+                lista.idPedido = "$hora$minutos$segundos"
+                idPedidoFinal = "$hora$minutos$segundos"
+                println("es nulo $idPedidoFinal")
+
+            }else{
+                lista.idPedido = "$idPedidoFinal"
+                println("no, es nulo $idPedidoFinal")
+
+
+            }
             lista.fecha = "$dia/$mes/$año"
             println("Hola comentaRIO"+textol)
 
@@ -280,7 +327,7 @@ class SeleccionProductoActivity : AppCompatActivity() {
 
 
     // obtiene en tiempo real el cnt del elemneto seleccionado
-    fun onEditTextChanged(editTextTag: String, newText: String) {
+    fun onEditTextChanged(editTextTag: Int, newText: String) {
         // Manejar el cambio de texto aquí
         // Puedes utilizar el editTextTag para identificar el EditText específico
         // Puedes realizar acciones específicas según el tag y el nuevo texto
@@ -288,6 +335,7 @@ class SeleccionProductoActivity : AppCompatActivity() {
         if (newText!=""){
             println("hola")
             cntGlobal = newText.toInt()
+           // updateBono()
             updatePrecio()
         }else{
             println("bye")
@@ -343,7 +391,7 @@ class SeleccionProductoActivity : AppCompatActivity() {
                             updateProductCounts(arrayList)
 
                             addProduct(arrayList, product)
-
+                            contador =1
                             contadorSave = 1
                         } else if (filtro != null) {
                             println("entre al filtro $filtro")
@@ -406,7 +454,6 @@ class SeleccionProductoActivity : AppCompatActivity() {
             for (productoB in arrayListE) {
                 if (producto.id_producto == productoB.codigo_producto && producto.id_cliente == productoB.id_cliente) {
                     producto.cnt = productoB.cnt
-                    println("productoB: $arrayList")
                 }
             }
         }
@@ -442,27 +489,31 @@ class SeleccionProductoActivity : AppCompatActivity() {
                     val fecha = pedido.getString("fecha")
                     val codigo_producto = pedido.getString("codigo_producto")
                     val comentario = pedido.getString("comentario")
-                    idPedido = pedido.getString("idPedido")
 
-                    arrayListE.add(PedidosModel(
-                        numPedido = numPedido,
-                        vendedor = vendedor,
-                        id_cliente = id_cliente,
-                        desc_cliente = desc_cliente,
-                        desc_producto = desc_producto,
-                        marca = marca,
-                        tipo = tipo,
-                        precio = precio,
-                        cnt = cnt,
-                        estado = estado,
-                        fecha = fecha,
-                        codigo_producto = codigo_producto,
-                        comentario = comentario,
-                        idPedido = idPedido))
+                    idPedido = pedido.getString("idPedido")
+                    if (idPedidoFinal == idPedido) {
+                        arrayListE.add(
+                            PedidosModel(
+                                numPedido = numPedido,
+                                vendedor = vendedor,
+                                id_cliente = id_cliente,
+                                desc_cliente = desc_cliente,
+                                desc_producto = desc_producto,
+                                marca = marca,
+                                tipo = tipo,
+                                precio = precio,
+                                cnt = cnt,
+                                estado = estado,
+                                fecha = fecha,
+                                codigo_producto = codigo_producto,
+                                comentario = comentario,
+                                idPedido = idPedido
+                            )
+                        )
+                    }
 
 
                 }
-                println("eso papus "+ arrayListE)
 
             } else {
                 println("El archivo no existe.")

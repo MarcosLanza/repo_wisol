@@ -116,6 +116,20 @@
                 app:iconTint="@android:color/white" />
 
             <Button
+                android:id="@+id/btnClear"
+                android:layout_width="170dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="10dp"
+                android:layout_marginVertical="16dp"
+                android:backgroundTint="@color/blue"
+                android:text="Limpiar"
+                app:cornerRadius='10dp'
+
+                app:iconTint="@android:color/white" />
+
+
+            <Button
                 android:id="@+id/btnNext"
                 android:layout_width="170dp"
                 android:layout_height="wrap_content"

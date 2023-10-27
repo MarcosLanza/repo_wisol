@@ -61,7 +61,6 @@ class RecyclerViewAdapterClientes : RecyclerView.Adapter<RecyclerViewAdapterClie
         if (position == selectedItemPosition) {
             // Si se selecciona el mismo elemento, deselecciónalo
             selectedItemPosition = RecyclerView.NO_POSITION
-            notifyDataSetChanged()
         } else {
             // De lo contrario, selecciona el nuevo elemento
             val previousSelectedItemPosition = selectedItemPosition
@@ -71,6 +70,7 @@ class RecyclerViewAdapterClientes : RecyclerView.Adapter<RecyclerViewAdapterClie
             // Aquí puedes notificar a la actividad sobre la selección, si es necesario
             val selectedCliente = clientes[selectedItemPosition]
             (context as? SeleccionClienteActivity)?.click(selectedCliente.desc_cliente, selectedCliente.id_cliente, selectedCliente.id_producto)
+
 
         }
     }

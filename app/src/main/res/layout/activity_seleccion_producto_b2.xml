@@ -37,7 +37,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="50dp"
                 android:layout_marginBottom="8dp"
-                android:text="#ArticulosB2"
+                android:text="#Articulos"
                 android:textSize="30dp"
                 android:textStyle="bold" />
 
@@ -99,7 +99,6 @@
             </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -107,7 +106,7 @@
             android:layout_margin="16dp">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/etComentarioProducto"
+                android:id="@+id/etFilterComentarioProducto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Comentario">
@@ -120,11 +119,12 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="600dp"
+            android:layout_height="550dp"
             android:orientation="vertical">
             <TableLayout
                 android:layout_width="match_parent"
@@ -183,7 +183,7 @@
                     android:background="@android:color/white" />
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerViewPB"
+                    android:id="@+id/recyclerViewP"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scrollbars="vertical"
@@ -274,7 +274,7 @@
                     android:text="0"
                     android:textSize="20dp"
 
-                    android:textColor="@color/white"
+                    android:textColor="@color/black"
                     android:gravity="center" />
 
                 <View
@@ -289,7 +289,7 @@
                     android:text="0"
                     android:textSize="20dp"
 
-                    android:textColor="@color/white"
+                    android:textColor="@color/black"
                     android:gravity="center" />
 
                 <View
@@ -304,7 +304,7 @@
                     android:text="0"
                     android:textSize="20dp"
 
-                    android:textColor="@color/white"
+                    android:textColor="@color/black"
                     android:gravity="center" />
 
 
@@ -329,7 +329,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Promedio Trim"
+                    android:text="   Bono"
                     android:textSize="20dp"
 
                     android:textColor="@color/white"
@@ -343,7 +343,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Mes Anterior"
+                    android:text="        Precio"
                     android:textSize="20dp"
 
                     android:textColor="@color/white"
@@ -372,7 +372,7 @@
                     android:text="0"
                     android:textSize="20dp"
 
-                    android:textColor="@color/white"
+                    android:textColor="@color/black"
                     android:gravity="center" />
 
                 <View
@@ -387,12 +387,11 @@
                     android:text="0"
                     android:textSize="20dp"
 
-                    android:textColor="@color/white"
+                    android:textColor="@color/black"
                     android:gravity="center" />
 
             </TableRow>
         </TableLayout>
-
 
 
 

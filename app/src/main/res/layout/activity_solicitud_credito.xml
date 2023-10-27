@@ -7,14 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".SolicitudCreditoActivity">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-
-
-
-    </LinearLayout>
 
     <!-- CardView con el logo -->
     <androidx.cardview.widget.CardView
@@ -60,12 +52,13 @@
 
     <!-- Columna izquierda -->
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:orientation="vertical"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/guidelineVertical"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cardViewNavBar">
 
         <!-- Campos de la columna izquierda -->
@@ -73,8 +66,8 @@
             android:id="@+id/etLugarFecha"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Lugar y Fecha"
-            android:layout_margin="8dp">
+            android:layout_margin="8dp"
+            android:hint="Lugar y Fecha">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/inputLugarFecha"
@@ -87,8 +80,8 @@
             android:id="@+id/etNombreDueño"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Nombre del Dueño o Apoderado Generalísimo"
-            android:layout_margin="8dp">
+            android:layout_margin="8dp"
+            android:hint="Nombre del Dueño o Apoderado Generalísimo">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/inputNombreDueño"
@@ -101,8 +94,8 @@
             android:id="@+id/etCedulaIdentidad"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Cédula de Identidad"
-            android:layout_margin="8dp">
+            android:layout_margin="8dp"
+            android:hint="Cédula de Identidad">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/inputCedulaIdentidad"
@@ -115,8 +108,8 @@
             android:id="@+id/etNombreEmpresa"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Nombre de la Empresa a Facturar"
-            android:layout_margin="8dp">
+            android:layout_margin="8dp"
+            android:hint="Nombre de la Empresa a Facturar">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/inputNombreEmpresa"
@@ -129,8 +122,8 @@
             android:id="@+id/etCanton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="CANTON"
-            android:layout_margin="8dp">
+            android:layout_margin="8dp"
+            android:hint="CANTON">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/inputCanton"
@@ -143,8 +136,8 @@
             android:id="@+id/etDistrito"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="DISTRITO"
-            android:layout_margin="8dp">
+            android:layout_margin="8dp"
+            android:hint="DISTRITO">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/inputDistrito"
@@ -157,8 +150,8 @@
             android:id="@+id/etTelefonoNegocio"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="NUMERO DE TELEFONO DEL NEGOCIO"
-            android:layout_margin="8dp">
+            android:layout_margin="8dp"
+            android:hint="NUMERO DE TELEFONO DEL NEGOCIO">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/inputTelefonoNegocio"
@@ -279,18 +272,57 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Otros campos de la columna derecha -->
-
-        <Button
-            android:id="@+id/btnAdjuntarImagen"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Adjuntar Imagen"
-            android:onClick="onAdjuntarImagenClick" />
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/imageContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        android:gravity="center"
+        android:layout_marginTop="10dp">
 
+        <ImageView
+            android:id="@+id/img1"
+            android:layout_width="20dp"
+            android:layout_height="200dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_launcher_background"
+            android:layout_marginEnd="10dp" />
+
+        <ImageView
+            android:id="@+id/img2"
+            android:layout_width="20dp"
+            android:layout_height="200dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_launcher_background"
+            android:layout_marginEnd="10dp" />
+
+        <ImageView
+            android:id="@+id/img3"
+            android:layout_width="20dp"
+            android:layout_height="200dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_launcher_background" />
+
+    </LinearLayout>
+
+    <!-- Botón para adjuntar imagen -->
+    <Button
+        android:id="@+id/btnAdjuntarImagen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onAdjuntarImagenClick"
+        android:text="Adjuntar Imagen"
+        app:layout_constraintTop_toBottomOf="@id/imageContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="10dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

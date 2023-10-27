@@ -23,7 +23,6 @@ data class ProductosModel( val vendedor: String,
                            var fecha:String,
                            val codigo_producto:String,
                            var comentario:String,
-                           val numPedido:String
-                            )
+                           val numPedido:String)
 
 

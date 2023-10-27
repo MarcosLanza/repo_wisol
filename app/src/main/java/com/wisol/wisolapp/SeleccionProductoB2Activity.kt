@@ -30,6 +30,7 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
     var contador = 0
     var contadorSave = 0
     var idPedido = ""
+    var idPedidoFinal: String? = ""
     var idProducto: String? = null
     var contadora: String? = ""
     var idClient = ""
@@ -42,8 +43,11 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
     private lateinit var mesAnterior:TextView
     private lateinit var mesActual:TextView
     private lateinit var precioP:TextView
+    private lateinit var bonoR:TextView
+
 
     var cntGlobal = 0
+    var minimo = 0
     var preze:Double = 0.0
     var total:Double = 0.0
 
@@ -64,8 +68,9 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
         setContentView(R.layout.activity_seleccion_producto_b2)
         idProducto = intent.extras?.getString("ID_ProductoB").orEmpty()
         idClient = intent.extras?.getString("ID_ClientB").orEmpty()
+        idPedidoFinal = intent.extras?.getString("ID_PedidoB").orEmpty()
+        println("este es el id final $idPedidoFinal+ $idProducto")
         contadora = intent.extras?.getString("CONT").orEmpty()
-        println("este es el id del cliente"+idClient)
         leerproducts()
 
 
@@ -73,6 +78,9 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
         mesAnterior = findViewById(R.id.tvMesAnteriror)
         mesActual = findViewById(R.id.tvMesActual)
         precioP = findViewById(R.id.tvPrecio)
+        bonoR = findViewById(R.id.tvBonoR)
+
+
         editCodigo = findViewById<TextInputEditText>(R.id.inputFilterCodigoProducto)
 
         comentario = findViewById<TextInputEditText>(R.id.inputComentarioProducto)
@@ -91,7 +99,6 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
                 words.forEachIndexed { index, word ->
 
                     filtro = text
-                    println("Wenas "+filtro)
 
                 }
 
@@ -135,8 +142,11 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
 
     private fun changeViewPro(){
         val intent = Intent(this, SeleccionProductoActivity::class.java)
-        intent.putExtra("ID_ProductoB", idProducto)
-        onBackPressed()
+        intent.putExtra("ID_Producto", idProducto)
+        intent.putExtra("ID_Client", idClient)
+        intent.putExtra("ID_Pedido", idPedido)
+
+        startActivity(intent)
     }
     private fun navigateToSaveProduct(){
         if (contador == 1){
@@ -148,8 +158,7 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
         }
         // Crea el archivo y escribe el JSON en él
 
-        val intent = Intent(this, PedidosActivity::class.java)
-        startActivity(intent)
+        changeViewPro()
 
     }
 
@@ -157,6 +166,10 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
         val gson = Gson()
         for (lista in selectedItemsA){
             lista.comentario = textol.toString()
+            if (idPedidoFinal != null){
+                println("hoal este es el id prediddo $idPedidoFinal")
+                lista.idPedido = idPedidoFinal.toString()
+            }
         }
         selectedItemsA = selectedItemsA
         val json = gson.toJson(selectedItemsA)
@@ -236,17 +249,33 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
         selectedItemsC = selectedItems
         if (selectedItemsC.isEmpty()){
             promedioTrim.text = "0"
+            mesActual.text = "0"
+            mesAnterior.text = "0"
+            bonoR.text = "0"
+            preze = 0.0
         }
         else{
             var pro = selectedItemsC.last()
             promedioTrim.text = pro.venta_trim
             mesActual.text = pro.venta_act
             mesAnterior.text = pro.venta_ant
+            minimo = pro.minimo.toInt()
             preze = pro.precio.toDouble()
+            updateBono()
             updatePrecio()
 
         }
 
+    }
+    private fun updateBono(){
+        println("este es el bonus " +cntGlobal+" "+minimo)
+        try {
+            bonoR.text = (cntGlobal / minimo).toString()
+        } catch (e: ArithmeticException) {
+            // Manejo de la excepción (división por cero)
+            // Puedes mostrar un mensaje de error o tomar alguna otra acción apropiada
+            bonoR.text = "0"
+        }
     }
     private fun updatePrecio(){
 
@@ -266,11 +295,18 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
         val mes = calendario.get(Calendar.MONTH) + 1  // Los meses comienzan desde 0, por lo que sumamos 1
         val dia = calendario.get(Calendar.DAY_OF_MONTH)
         contador = 1
-        for (lista in selectedItems){
-            lista.idPedido = "$hora$minutos$segundos"
-            lista.fecha = "$dia/$mes/$año"
-            println("Hola comentaRIO"+textol)
+        for (lista in selectedItems) {
+            if (idPedidoFinal == "") {
+                lista.idPedido = "$hora$minutos$segundos"
+                idPedidoFinal = "$hora$minutos$segundos"
+                println("es nulo $idPedidoFinal")
 
+            } else {
+                lista.idPedido = "$idPedidoFinal"
+                println("no, es nulo $idPedidoFinal")
+
+
+            }
         }
         selectedItemsA = selectedItems
 
@@ -287,6 +323,7 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
         if (newText!=""){
             println("hola")
             cntGlobal = newText.toInt()
+            updateBono()
             updatePrecio()
         }else{
             println("bye")
@@ -359,7 +396,7 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
         }
 
         // Inicializar RecyclerView y su adaptador
-        val recycler: RecyclerView = findViewById(R.id.recyclerViewPB)
+        val recycler: RecyclerView = findViewById(R.id.recyclerViewP)
         val adapter: RecyclerViewAdapterProductosB2 = RecyclerViewAdapterProductosB2()
         adapter.RecyclerViewAdapter(arrayList, this)
         recycler.hasFixedSize()
@@ -394,7 +431,6 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
                 numPedido = "1",
                 codigo_producto = product.id_producto,
                 comentario = ""
-
 
             )
         )

@@ -83,12 +83,13 @@ class RecyclerViewAdapter : RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>
         holder.itemView.setOnClickListener {
             if (selectedItemPosition == position) {
                 selectedItemPosition = RecyclerView.NO_POSITION
-                (context as? PedidosActivity)?.obtenerIdPe("", "")
+                (context as? PedidosActivity)?.obtenerIdPe("", "", "")
             } else {
                 selectedItemPosition = holder.adapterPosition
                 var idPodido = pedido.idPedido
                 var idCliente = pedido.id_cliente
-                (context as? PedidosActivity)?.obtenerIdPe(idPodido, idCliente)
+                var estado = pedido.estado
+                (context as? PedidosActivity)?.obtenerIdPe(idPodido, idCliente, estado)
             }
             notifyDataSetChanged()
         }

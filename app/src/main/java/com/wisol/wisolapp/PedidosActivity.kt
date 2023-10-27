@@ -19,6 +19,7 @@ class PedidosActivity : AppCompatActivity() {
 
     var idPodido = ""
     var idCliente = ""
+    var estadoP = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,7 +60,7 @@ class PedidosActivity : AppCompatActivity() {
 
     }
     private fun editPedido(){
-        if(idPodido!=""){
+        if(idPodido!="" && estadoP == "abierto"){
             val intent = Intent(this, SeleccionProductoActivity::class.java)
             intent.putExtra("ID_Pedido", idPodido)
             intent.putExtra("ID_Client", idCliente)
@@ -111,9 +112,10 @@ class PedidosActivity : AppCompatActivity() {
 
         }
     }
-    fun obtenerIdPe(idPedido:String, idClient:String){
+    fun obtenerIdPe(idPedido:String, idClient:String, estado:String){
         idPodido = idPedido
         idCliente = idClient
+        estadoP = estado
     }
 
     private fun deletePeidoTxt(){
