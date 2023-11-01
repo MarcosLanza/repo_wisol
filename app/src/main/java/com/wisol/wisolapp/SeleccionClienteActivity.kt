@@ -118,6 +118,7 @@ class SeleccionClienteActivity : AppCompatActivity() {
     private fun clear(){
         editCodigo.setText("")
         editText.setText("")
+        idProducto = null
     }
 
     private fun navigateToBackPedido(){

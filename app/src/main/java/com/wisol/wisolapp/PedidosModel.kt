@@ -13,4 +13,6 @@ data class PedidosModel(val numPedido:String,
                         val fecha:String,
                         val codigo_producto:String,
                         val comentario:String,
-                        val idPedido:String)
+                        val idPedido:String,
+                        val precioT:String,
+                        val bonoT:String)

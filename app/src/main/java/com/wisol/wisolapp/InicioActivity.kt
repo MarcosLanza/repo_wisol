@@ -615,6 +615,9 @@ class InicioActivity : AppCompatActivity() {
                     val codigo_producto = pedido.getString("codigo_producto")
                     val comentario = pedido.getString("comentario")
                     val idPedido = pedido.getString("idPedido")
+                    val precioT = pedido.getString("precioTotal")
+                    val bono = pedido.getString("bonoT")
+
 
 
                     arrayListE.add(PedidosModel(
@@ -631,7 +634,9 @@ class InicioActivity : AppCompatActivity() {
                         fecha = fecha,
                         codigo_producto = codigo_producto,
                         comentario = comentario,
-                        idPedido = idPedido))
+                        idPedido = idPedido,
+                        precioT = precioT,
+                        bonoT = bono))
 
 
                 }

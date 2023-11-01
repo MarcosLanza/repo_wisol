@@ -39,8 +39,9 @@ dependencies {
 
 
     implementation("com.squareup.okhttp3:okhttp:4.9.1")
+    implementation ("com.github.pwittchen:reactivenetwork-rx2:3.0.2")
 
-
+    implementation ("io.reactivex.rxjava2:rxjava:2.x.x")
 
     implementation ("com.opencsv:opencsv:5.5.2")
 

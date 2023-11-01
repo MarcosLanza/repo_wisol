@@ -2,11 +2,15 @@ package com.wisol.wisolapp
 
 //import com.android.volley.Request
 
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
+import com.opencsv.CSVReader
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
@@ -14,6 +18,7 @@ import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.FileReader
 import java.io.IOException
 import java.security.MessageDigest
 
@@ -24,6 +29,8 @@ class MainActivity : AppCompatActivity() {
     var passwordBuscada = ""
     var passwordCodificado = ""
     var idUsuario : String? = ""
+    val usersList = mutableListOf<UsersModel>()
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,13 +45,44 @@ class MainActivity : AppCompatActivity() {
             nombreBuscado = inputName.text.toString()
             passwordBuscada = inputPass.text.toString()
             passwordCodificado = sha256(passwordBuscada)
-            realizarSolicitudHTTP()
+            conexionInternet()
 
         }
 
 
     }
-    fun sha256(text: String): String {
+    private fun conexionInternet(){
+        if (isNetworkAvailable(this)) {
+            println("hay internet")
+            realizarSolicitudHTTP()
+
+        } else {
+            // No hay conexión a Internet
+            println("no hay internet")
+            leercsvUser()
+            login()
+
+        }
+    }
+    private fun login(){
+        for (use in usersList){
+            if (use.usuario == nombreBuscado && use.password == passwordCodificado){
+                println("password es "+use.password)
+                idUsuario = use.usuario
+                println("Hola muchachos $use.usuario")
+                navigateToIncio()
+            }
+            println("Bye Muchachos")
+            println("password es "+use.password+" "+use.usuario)
+        }
+    }
+
+    private fun isNetworkAvailable(context: Context): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetworkInfo: NetworkInfo? = connectivityManager.activeNetworkInfo
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected
+    }
+    private fun sha256(text: String): String {
         val bytes = text.toByteArray(Charsets.UTF_8)
         val md = MessageDigest.getInstance("SHA-256")
         val digest = md.digest(bytes)
@@ -60,6 +98,49 @@ class MainActivity : AppCompatActivity() {
         return String(hexChars)
     }
 
+    private fun leercsvUser(){
+        val filePath = applicationContext.filesDir.absolutePath + "/usuarios.csv" // Ruta al archivo CSV
+
+
+        try {
+            val csvReader = CSVReader(FileReader(filePath))
+
+            // Leer la primera línea (encabezados) y descartarla
+            csvReader.readNext()
+
+            var record: Array<String>?
+            while (true) {
+                record = csvReader.readNext()
+                if (record == null) {
+                    break
+                }
+                val user = UsersModel(
+                    record[0],
+                    record[1],
+                    record[2],
+                    record[3],
+                    record[4],
+                    record[5],
+                    record[6],
+                    record[7],
+                    record[8]
+                )
+                usersList.add(user)
+
+            }
+            csvReader.close()
+            for (use in usersList){
+                println("wewona "+use.correo)
+            }
+
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+
+    }
+
 
     private fun navigateToIncio() {
         val intent = Intent(this, InicioActivity::class.java)
@@ -69,7 +150,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun realizarSolicitudHTTP() {
+    private fun realizarSolicitudHTTP() {
         val url = "https://script.google.com/macros/s/AKfycbykgrf2MAkYOrlcgyupiA0laVPYM845yx0Tdj-qfFXcHeo7qwFNs_annyEzDwgY9UhF/exec?function=doGet&nombreArchivo=matrices_seguridad_usuarios_20231021_203555.csv"
         val client = OkHttpClient()
         val request = Request.Builder()
@@ -134,7 +215,7 @@ class MainActivity : AppCompatActivity() {
 
                                     println("Bye Muchachos")
                                     println("password es "+password+" "+nombre)
-                                    navigateToIncio()
+                                    //navigateToIncio()
 
                                 }
 

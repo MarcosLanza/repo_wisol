@@ -33,11 +33,17 @@ class SeleccionProductoActivity : AppCompatActivity() {
     var idPedidoFinal: String? = ""
     var idProducto: String? = null
     var contadora: String? = ""
+    var change: String? = ""
+    var changeA: String? = ""
+    var comentarioB: String? = ""
+
+
     var idClient = ""
     var selectedItemsA: MutableList<ProductosModel> = ArrayList() // Lista para rastrear elementos seleccionados
     var selectedItemsB: MutableList<ProductosModel> = ArrayList() // Lista para rastrear elementos seleccionados
     //esta lista es para ver los reportes
     var selectedItemsC: MutableList<ProductosModel> = ArrayList() // Lista para rastrear elementos seleccionados
+    val arrayList: MutableList<ProductosModel> = ArrayList()
 
     private lateinit var promedioTrim:TextView
     private lateinit var mesAnterior:TextView
@@ -45,6 +51,8 @@ class SeleccionProductoActivity : AppCompatActivity() {
     private lateinit var precioP:TextView
     private lateinit var min:TextView
     private lateinit var cantidadBono:TextView
+    private lateinit var recyclerViewAdapter: RecyclerViewAdapterProductos
+
 
 
 
@@ -72,8 +80,17 @@ class SeleccionProductoActivity : AppCompatActivity() {
         idProducto = intent.extras?.getString("ID_Producto").orEmpty()
         idClient = intent.extras?.getString("ID_Client").orEmpty()
         idPedidoFinal = intent.extras?.getString("ID_Pedido").orEmpty()
+        change = intent.extras?.getString("Cambio").orEmpty()
+
         contadora = intent.extras?.getString("CONT").orEmpty()
-        leerproducts()
+
+
+        recyclerViewAdapter = RecyclerViewAdapterProductos()
+        recyclerViewAdapter.RecyclerViewAdapter(arrayList, this)
+
+        val recycler: RecyclerView = findViewById(R.id.recyclerViewP)
+        recycler.layoutManager = LinearLayoutManager(this)
+        recycler.adapter = recyclerViewAdapter
 
 
         promedioTrim = findViewById(R.id.tvPromedioTrim)
@@ -87,7 +104,9 @@ class SeleccionProductoActivity : AppCompatActivity() {
 
         editCodigo = findViewById<TextInputEditText>(R.id.inputFilterCodigoProducto)
 
-        comentario = findViewById<TextInputEditText>(R.id.inputComentarioProducto)
+        comentario = findViewById(R.id.inputComentarioProductoA)
+        leerproducts()
+        leercomentario()
 
         editCodigo.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -106,8 +125,7 @@ class SeleccionProductoActivity : AppCompatActivity() {
                     println("Wenas "+filtro)
 
                 }
-
-                leerproducts()
+                updateFiltro()
 
             }
 
@@ -145,15 +163,36 @@ class SeleccionProductoActivity : AppCompatActivity() {
 
     }
 
+    private fun leercomentario() {
+        if (comentarioB != ""){
+            comentario.setText(comentarioB)
+
+        }
+    }
+
+    fun updateFiltro(){
+        recyclerViewAdapter.updateFiltro(filtro.toString())
+
+    }
+
     private fun changeViewPro(){
-        val intent = Intent(this, PedidosActivity::class.java)
-        intent.putExtra("ID_ProductoB", idProducto)
-        intent.putExtra("ID_ClientB", idClient)
-        intent.putExtra("ID_PedidoB", idPedidoFinal)
-        println("este es el id final $idPedidoFinal")
+
+        if (change == "si"){
+            val intent = Intent(this, PedidosActivity::class.java)
+
+            startActivity(intent)
 
 
-        startActivity(intent)
+        }else{
+            val intent = Intent(this, SeleccionProductoB2Activity::class.java)
+            intent.putExtra("ID_ProductoB", idProducto)
+            intent.putExtra("ID_ClientB", idClient)
+            intent.putExtra("ID_PedidoB", idPedidoFinal)
+            intent.putExtra("CambioB", changeA)
+            println("este es el id final $idPedidoFinal")
+            startActivity(intent)
+        }
+
     }
     private fun navigateToSaveProduct(){
         if (contador == 1){
@@ -202,6 +241,7 @@ class SeleccionProductoActivity : AppCompatActivity() {
             escritor.use { escritor ->
                 escritor.write(jsonActualizado)
             }
+            changeA = "si"
 
 
         } catch (e: IOException) {
@@ -227,16 +267,17 @@ class SeleccionProductoActivity : AppCompatActivity() {
             // ID del pedido que deseas eliminar
             val idPedidoAEliminar = idPedido // Reemplaza con el ID que necesitas eliminar
             println("pedido a eliminar $idPedido")
-            // Eliminar objetos con el ID deseado
+
+            // Eliminar objetos con el ID deseado y tipo "DEVOLUCION"
             val objetosFiltrados = JSONArray()
             for (i in 0 until listaDeObjetos.length()) {
                 val objeto = listaDeObjetos.getJSONObject(i)
                 val idPedido = objeto.getString("idPedido")
+                val tipo = objeto.getString("tipo")
 
-
-                if (idPedido != idPedidoAEliminar) {
+                if (idPedido != idPedidoAEliminar || tipo != "TERMINADO") {
                     objetosFiltrados.put(objeto)
-                    println("estos son los filtros"+objetosFiltrados)
+                    println("estos son los filtros: $objetosFiltrados")
                 }
             }
 
@@ -246,7 +287,7 @@ class SeleccionProductoActivity : AppCompatActivity() {
             // Escribir el nuevo contenido en el archivo TXT
             rutaArchivo.writeText(nuevoContenido)
 
-            println("Objeto con ID $idPedidoAEliminar eliminado exitosamente.")
+            println("Objetos con ID $idPedidoAEliminar y tipo 'DEVOLUCION' eliminados exitosamente.")
             guardarPedido()
             contadorSave = 0
 
@@ -263,6 +304,7 @@ class SeleccionProductoActivity : AppCompatActivity() {
             mesAnterior.text = "0"
           //  bonoR.text = "0"
             preze = 0.0
+            precioP.text = "0"
         }
         else{
             var pro = selectedItemsC.last()
@@ -274,6 +316,7 @@ class SeleccionProductoActivity : AppCompatActivity() {
             min.text = minimo.toString()
             cantidadBono.text = pro.bono
             updatePrecio()
+
 
         }
 
@@ -287,9 +330,9 @@ class SeleccionProductoActivity : AppCompatActivity() {
         }
     }
     private fun updatePrecio(){
-        
-        total = cntGlobal.toDouble() * preze
-        precioP.text = total.toString()
+        val sumaTotal = selectedItemsC.sumByDouble { it.precioTotal.toDouble() }
+        println("la suma total es: $sumaTotal")
+        precioP.text = sumaTotal.toString()
 
     }
 
@@ -335,8 +378,9 @@ class SeleccionProductoActivity : AppCompatActivity() {
         if (newText!=""){
             println("hola")
             cntGlobal = newText.toInt()
-           // updateBono()
             updatePrecio()
+
+            // updateBono()
         }else{
             println("bye")
             cntGlobal = 0
@@ -349,7 +393,6 @@ class SeleccionProductoActivity : AppCompatActivity() {
     //lee el archivo pedidos
     private fun leerproducts() {
         val filePath = applicationContext.filesDir.absolutePath + "/productos.csv" // Ruta al archivo CSV
-        val arrayList: MutableList<ProductosModel> = ArrayList()
 
         try {
             CSVReader(FileReader(filePath)).use { csvReader ->
@@ -391,6 +434,8 @@ class SeleccionProductoActivity : AppCompatActivity() {
                             updateProductCounts(arrayList)
 
                             addProduct(arrayList, product)
+                            //comentario.setText(comentarioB)
+
                             contador =1
                             contadorSave = 1
                         } else if (filtro != null) {
@@ -408,12 +453,7 @@ class SeleccionProductoActivity : AppCompatActivity() {
         }
 
         // Inicializar RecyclerView y su adaptador
-        val recycler: RecyclerView = findViewById(R.id.recyclerViewP)
-        val adapter: RecyclerViewAdapterProductos = RecyclerViewAdapterProductos()
-        adapter.RecyclerViewAdapter(arrayList, this)
-        recycler.hasFixedSize()
-        recycler.adapter = adapter
-        recycler.layoutManager = LinearLayoutManager(this)
+
     }
 
     private fun addProduct(arrayList: MutableList<ProductosModel>, product: ProductsModel) {
@@ -442,7 +482,9 @@ class SeleccionProductoActivity : AppCompatActivity() {
                 fecha = "",
                 numPedido = "1",
                 codigo_producto = product.id_producto,
-                comentario = ""
+                comentario = "",
+                precioTotal = "0",
+                bonoT = "0"
 
 
             )
@@ -454,6 +496,13 @@ class SeleccionProductoActivity : AppCompatActivity() {
             for (productoB in arrayListE) {
                 if (producto.id_producto == productoB.codigo_producto && producto.id_cliente == productoB.id_cliente) {
                     producto.cnt = productoB.cnt
+                    producto.precioTotal = productoB.precioT
+                    producto.bonoT = productoB.bonoT
+                    //comentario.setText(producto.comentario)
+                    comentarioB = productoB.comentario
+                    println("comentario $comentarioB")
+
+
                 }
             }
         }
@@ -484,12 +533,14 @@ class SeleccionProductoActivity : AppCompatActivity() {
                     val marca = pedido.getString("marca")
                     val tipo = pedido.getString("tipo")
                     val precio = pedido.getString("precio")
+                    val precioT = pedido.getString("precioTotal")
+                    val bono = pedido.getString("bonoT")
+
                     val cnt = pedido.getString("cnt")
                     val estado = "abierto"
                     val fecha = pedido.getString("fecha")
                     val codigo_producto = pedido.getString("codigo_producto")
                     val comentario = pedido.getString("comentario")
-
                     idPedido = pedido.getString("idPedido")
                     if (idPedidoFinal == idPedido) {
                         arrayListE.add(
@@ -507,7 +558,9 @@ class SeleccionProductoActivity : AppCompatActivity() {
                                 fecha = fecha,
                                 codigo_producto = codigo_producto,
                                 comentario = comentario,
-                                idPedido = idPedido
+                                idPedido = idPedido,
+                                precioT = precioT,
+                                bonoT = bono
                             )
                         )
                     }

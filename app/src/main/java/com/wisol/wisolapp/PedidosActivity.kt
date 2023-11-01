@@ -210,7 +210,8 @@ class PedidosActivity : AppCompatActivity() {
                     val codigo_producto = pedido.getString("codigo_producto")
                     val comentario = pedido.getString("comentario")
                     val idPedido = pedido.getString("idPedido")
-
+                    val precioT = pedido.getString("precioTotal")
+                    val bono = pedido.getString("bonoT")
                     arrayList.add(PedidosModel(numPedido = numPedido,
                         vendedor = vendedor,
                         id_cliente = id_cliente,
@@ -224,7 +225,9 @@ class PedidosActivity : AppCompatActivity() {
                         fecha = fecha,
                         codigo_producto = codigo_producto,
                         comentario = comentario,
-                        idPedido = idPedido))
+                        idPedido = idPedido,
+                        precioT = precioT,
+                        bonoT = bono))
                     arrayListN = arrayList.distinctBy { it.idPedido }.toMutableList()
                     val recycler : RecyclerView = findViewById(R.id.recyclerView)
                     val adapter : RecyclerViewAdapter = RecyclerViewAdapter()
