@@ -115,7 +115,10 @@ class SolicitudCreditoActivity : AppCompatActivity() {
                 // Al menos uno de los campos está vacío, realiza alguna acción aquí
                 // Por ejemplo, muestra un mensaje de error o toma alguna otra acción.
                 println("faltan cosas")
+                println("lugar="+lugarFecha.text)
+
             } else {
+                println("lugar="+lugarFecha)
                 val scriptUrl = "https://script.google.com/macros/s/AKfycbzy8NU8JJAihzndD8EaqjGO6BZc6SWUZ6FiUV4_BmJ2lNTNGo-0Wlyz2jOKwm_mg8B4/exec?function=doPost&nombreArchivo=CLIENTES.csv"
 
                 val client = OkHttpClient()
@@ -125,19 +128,7 @@ class SolicitudCreditoActivity : AppCompatActivity() {
                         val jsonData = """
                         {
                            "nombreArchivo": "CLIENTES.csv",
-                           "nuevosDatos": ["${lugarFecha};${nombreEmpresa};
-                           ${nombreDueno};
-                           ${cedulaJuridica};
-                           ${cedulaIdentidad};
-                           ${direccionExacta};
-                           ${nombreFantasia};
-                           ${provincia};
-                           ${canton};
-                           ${distrito};
-                           ${telefonoNegocio};
-                           ${telefonoDueno};
-                           ${correoElectronico};
-                           ${facturacionCorreoElectronico}"]
+                           "nuevosDatos": ["${lugarFecha.text};${nombreEmpresa.text};${nombreDueno.text};${cedulaJuridica.text};${cedulaIdentidad.text};${direccionExacta.text};${nombreFantasia.text};${provincia.text};${canton.text};${distrito.text};${telefonoNegocio.text};${telefonoDueno.text};${correoElectronico.text};${facturacionCorreoElectronico.text}"]
                         }
                     """.trimIndent()
 

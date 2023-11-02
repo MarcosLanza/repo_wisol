@@ -86,7 +86,8 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/inputNombreDueño"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="text|textNoSuggestions"                />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -100,7 +101,10 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/inputCedulaIdentidad"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="number"
+
+                />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -128,7 +132,8 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/inputCanton"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="text|textNoSuggestions"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -142,7 +147,8 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/inputDistrito"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="text|textNoSuggestions"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -156,7 +162,9 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/inputTelefonoNegocio"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -226,7 +234,8 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/inputProvincia"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="text|textNoSuggestions"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -240,7 +249,10 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/inputTelefonoDueño"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="number"
+
+                />
 
         </com.google.android.material.textfield.TextInputLayout>
 
