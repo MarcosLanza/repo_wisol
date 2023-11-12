@@ -7,8 +7,10 @@ import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.opencsv.CSVReader
 import okhttp3.Call
@@ -29,6 +31,7 @@ class MainActivity : AppCompatActivity() {
     var passwordBuscada = ""
     var passwordCodificado = ""
     var idUsuario : String? = ""
+    var rol : String? = ""
     val usersList = mutableListOf<UsersModel>()
 
 
@@ -69,7 +72,9 @@ class MainActivity : AppCompatActivity() {
             if (use.usuario == nombreBuscado && use.password == passwordCodificado){
                 println("password es "+use.password)
                 idUsuario = use.usuario
+                rol = use.role
                 println("Hola muchachos $use.usuario")
+                inicioSeccion()
                 navigateToIncio()
             }
             println("Bye Muchachos")
@@ -123,16 +128,15 @@ class MainActivity : AppCompatActivity() {
                     record[5],
                     record[6],
                     record[7],
-                    record[8]
+                    record[8],
+                    record[9],
+                    record[10]
                 )
                 usersList.add(user)
+                println("Hola "+usersList)
 
             }
             csvReader.close()
-            for (use in usersList){
-                println("wewona "+use.correo)
-            }
-
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -145,6 +149,9 @@ class MainActivity : AppCompatActivity() {
     private fun navigateToIncio() {
         val intent = Intent(this, InicioActivity::class.java)
         intent.putExtra("ID_USUARIO", idUsuario)
+        intent.putExtra("ROLE", rol)
+
+
         println("estoy mandando esto $idUsuario")
         startActivity(intent)
 
@@ -209,12 +216,15 @@ class MainActivity : AppCompatActivity() {
                                     if (usuario == nombreBuscado && password == passwordCodificado){
                                         println("password es "+password)
                                         idUsuario = usuario
+                                        rol = role
                                         println("Hola muchachos $usuario")
+                                        inicioSeccion()
                                         navigateToIncio()
                                     }
 
                                     println("Bye Muchachos")
                                     println("password es "+password+" "+nombre)
+                                    mostrarMensajeInvalido()
                                     //navigateToIncio()
 
                                 }
@@ -241,6 +251,20 @@ class MainActivity : AppCompatActivity() {
                 // Manejar errores de conexión
             }
         })
+    }
+
+    fun mostrarMensajeInvalido() {
+        val rootView = findViewById<View>(android.R.id.content)
+        Snackbar.make(rootView, "Contraseña o usuario inválido", Snackbar.LENGTH_LONG).show()
+    }
+
+    private fun inicioSeccion(){
+        val sharedPreferences = getSharedPreferences("MiUsuario", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("miValor", "$idUsuario")
+        editor.apply()
+
+
     }
 
 

@@ -42,6 +42,9 @@ dependencies {
     implementation ("com.github.pwittchen:reactivenetwork-rx2:3.0.2")
 
     implementation ("io.reactivex.rxjava2:rxjava:2.x.x")
+    implementation ("com.google.android.gms:play-services-drive:17.0.0")
+
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:x.y.z")
 
     implementation ("com.opencsv:opencsv:5.5.2")
 

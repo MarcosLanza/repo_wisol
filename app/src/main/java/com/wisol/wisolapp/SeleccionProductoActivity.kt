@@ -70,6 +70,7 @@ class SeleccionProductoActivity : AppCompatActivity() {
 
     var textol: String? = null
 
+    var comentarioC: String? = ""
 
 
 
@@ -81,6 +82,7 @@ class SeleccionProductoActivity : AppCompatActivity() {
         idClient = intent.extras?.getString("ID_Client").orEmpty()
         idPedidoFinal = intent.extras?.getString("ID_Pedido").orEmpty()
         change = intent.extras?.getString("Cambio").orEmpty()
+        comentarioC = intent.extras?.getString("Comentario").orEmpty()
 
         contadora = intent.extras?.getString("CONT").orEmpty()
 
@@ -105,6 +107,7 @@ class SeleccionProductoActivity : AppCompatActivity() {
         editCodigo = findViewById<TextInputEditText>(R.id.inputFilterCodigoProducto)
 
         comentario = findViewById(R.id.inputComentarioProductoA)
+        editComentario()
         leerproducts()
         leercomentario()
 
@@ -155,12 +158,26 @@ class SeleccionProductoActivity : AppCompatActivity() {
         btnSave.setOnClickListener { navigateToSaveProduct() }
          val imcSt = findViewById<ImageView>(R.id.imclogoLesst)
 
-        imcSt.setOnClickListener { changeViewPro() }
+        imcSt.setOnClickListener { val intent = Intent(this, SeleccionProductoB2Activity::class.java)
+            intent.putExtra("ID_ProductoB", idProducto)
+            intent.putExtra("ID_ClientB", idClient)
+            intent.putExtra("ID_PedidoB", idPedidoFinal)
+            intent.putExtra("ComentarioB", comentarioB)
+
+            intent.putExtra("CambioB", changeA)
+            println("este es el id final $idPedidoFinal")
+            startActivity(intent)
+        }
 
 
 
 
 
+    }
+    private fun editComentario(){
+        if (comentarioC != "null"){
+            comentario.setText(comentarioC)
+        }
     }
 
     private fun leercomentario() {
@@ -188,6 +205,8 @@ class SeleccionProductoActivity : AppCompatActivity() {
             intent.putExtra("ID_ProductoB", idProducto)
             intent.putExtra("ID_ClientB", idClient)
             intent.putExtra("ID_PedidoB", idPedidoFinal)
+            intent.putExtra("ComentarioB", textol.toString())
+
             intent.putExtra("CambioB", changeA)
             println("este es el id final $idPedidoFinal")
             startActivity(intent)

@@ -1,12 +1,16 @@
 package com.wisol.wisolapp
 
+import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
+import android.view.Gravity
 import android.widget.Button
+import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import com.opencsv.CSVReader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -26,48 +30,113 @@ import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
 import java.io.IOException
+import java.util.Calendar
+
+// Otras importaciones
+
 
 class InicioActivity : AppCompatActivity() {
 
     var contador = 0
     var usu: String? = ""
+    var rol: String? = ""
+    var usuarioGit: String? = ""
+
+
 
 
 
 
     val arrayListE: MutableList<PedidosModel> = ArrayList()
     private lateinit var btnCirculo: FloatingActionButton
+    private lateinit var btnPedidos: Button
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_inicio)
 
-         usu = intent.extras?.getString("ID_USUARIO").orEmpty()
+        usu = intent.extras?.getString("ID_USUARIO").orEmpty()
+        rol = intent.extras?.getString("ROLE").orEmpty()
 
+        userUsu()
 
-        val btnPedidos = findViewById<Button>(R.id.btnPedidos)
+        btnPedidos = findViewById(R.id.btnPedidos)
         btnPedidos.setOnClickListener { navigateToIncio() }
         val btnNewClient = findViewById<Button>(R.id.btnNewClient)
         val btnSincronizar = findViewById<Button>(R.id.btnSincronizar)
         val btnout = findViewById<Button>(R.id.btnOut)
         val btnSubirPediddo = findViewById<Button>(R.id.btnSubirPedido)
-        btnCirculo = findViewById<FloatingActionButton>(R.id.flsincronizar)
+        btnCirculo = findViewById(R.id.flsincronizar)
 
         btnSubirPediddo.setOnClickListener { subirDrivePedido() }
-        btnout.setOnClickListener {  }
+        btnout.setOnClickListener { cerrarSeccion() }
         btnSincronizar.setOnClickListener { sincronizar() }
 
         btnNewClient.setOnClickListener { navigateToNewClient() }
         geto()
-        changeCOlorBtn()
         leercsvUser()
+        secion()
+        changeCOlorBtn()
+
+
 
     }
+    private fun cerrarSeccion(){
+        val sharedPreferences = getSharedPreferences("MiPref", Context.MODE_PRIVATE)
+        val nuevoValor = 0
+        val editor = sharedPreferences.edit()
+        editor.putString("miValor", nuevoValor.toString())
+        editor.apply()
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+    }
+
+    private fun inicioSeccion(){
+        val sharedPreferences = getSharedPreferences("MiPref", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("miValor", "$contador")
+        editor.apply()
+
+
+    }
+    private fun secion(){
+        val sharedPreferences = getSharedPreferences("MiPref", Context.MODE_PRIVATE)
+        val valorRecuperado = sharedPreferences.getString("miValor", "")
+        println("valor $valorRecuperado")
+        if (valorRecuperado == "1"){
+            contador = 1
+        }
+    }
+
+    private fun userUsu(){
+        val sharedPreferences = getSharedPreferences("MiUsuario", Context.MODE_PRIVATE)
+        val valorRecuperado = sharedPreferences.getString("miValor", "")
+        val calendario = Calendar.getInstance()
+        val hora = calendario.get(Calendar.HOUR_OF_DAY)
+        val minutos = calendario.get(Calendar.MINUTE)
+        val segundos = calendario.get(Calendar.SECOND)
+        val ano = calendario.get(Calendar.YEAR)
+        val mes = calendario.get(Calendar.MONTH) + 1  // Los meses comienzan desde 0, por lo que sumamos 1
+        val dia = calendario.get(Calendar.DAY_OF_MONTH)
+        val diaFormateado = String.format("%02d", dia)
+
+
+        usuarioGit = "$valorRecuperado"+"_$ano$mes$diaFormateado.csv"
+
+
+        println("valori $usuarioGit")
+
+    }
+
+
     private fun changeCOlorBtn(){
         val colorRojo = ColorStateList.valueOf(Color.RED)
         val colorVerde = ColorStateList.valueOf(Color.GREEN)
-
+        if (contador == 0){
+            btnPedidos.backgroundTintList = colorRojo
+        }
 
 
         for (lista in arrayListE){
@@ -80,17 +149,16 @@ class InicioActivity : AppCompatActivity() {
         }
     }
     private fun navigateToIncio() {
-        val intent = Intent(this, PedidosActivity::class.java)
-        startActivity(intent)
-
-
-    }
-
-    private fun out() {
+        if (contador == 1){
+            val intent = Intent(this, PedidosActivity::class.java)
+            startActivity(intent)
+        }
 
 
 
     }
+
+
 
     private fun navigateToNewClient(){
         val intent = Intent(this, SolicitudCreditoActivity::class.java)
@@ -100,6 +168,7 @@ class InicioActivity : AppCompatActivity() {
     private fun sincronizar(){
         sincronizarUsers()
         sincronizarProducts()
+
         //subirDrivePedido()
     }
 
@@ -156,21 +225,25 @@ class InicioActivity : AppCompatActivity() {
                                 val usuario = fila[1]
                                 val password = fila[2]
                                 val correo = fila[3]
-                                val funcionId = fila[4]
+                                val nombre = fila[4]
+                                val funcionId = fila[5]
                                 val aplicacion = fila[5]
-                                val funcion = fila[6]
-                                val roleId = fila[7]
-                                val permiso = fila[8]
+                                val funcion = fila[7]
+                                val roleId = fila[8]
+                                val role = fila[9]
+                                val permiso = fila[10]
 
                                 val userModel = UsersModel(
                                     usuarioId,
                                     usuario,
                                     password,
+                                    nombre,
                                     correo,
                                     funcionId,
                                     aplicacion,
                                     funcion,
                                     roleId,
+                                    role,
                                     permiso
                                 )
 
@@ -250,7 +323,9 @@ class InicioActivity : AppCompatActivity() {
                     record[5],
                     record[6],
                     record[7],
-                    record[8]
+                    record[8],
+                    record[9],
+                    record[10]
                 )
                 usersList.add(user)
 
@@ -335,30 +410,32 @@ class InicioActivity : AppCompatActivity() {
                                 val bono = fila[15]
                                 val minimo = fila[16]
                                 println("usu = $vendedor + $usu")
-                                if (vendedor == usu){
+                                if (rol == "Vendedor"){
                                     println("usuario final $usu")
-                                    val productModel = ProductsModel(
-                                        vendedor,
-                                        idCliente,
-                                        descCliente,
-                                        idProducto,
-                                        descProducto,
-                                        marca,
-                                        tipo,
-                                        precio,
-                                        descuento,
-                                        tipoImpuesto,
-                                        tipoTarifa,
-                                        impuesto,
-                                        ventaTrim,
-                                        ventaAnt,
-                                        ventaAct,
-                                        bono,
-                                        minimo
-                                    )
+                                    if (vendedor == usu) {
+                                        val productModel = ProductsModel(
+                                            vendedor,
+                                            idCliente,
+                                            descCliente,
+                                            idProducto,
+                                            descProducto,
+                                            marca,
+                                            tipo,
+                                            precio,
+                                            descuento,
+                                            tipoImpuesto,
+                                            tipoTarifa,
+                                            impuesto,
+                                            ventaTrim,
+                                            ventaAnt,
+                                            ventaAct,
+                                            bono,
+                                            minimo
+                                        )
 
-                                    productos.add(productModel)
-                                }else if(usu == "MCORDERO"){
+                                        productos.add(productModel)
+                                    }
+                                }else if(rol == "Supervisor"){
                                     val productModel = ProductsModel(
                                         vendedor,
                                         idCliente,
@@ -386,6 +463,10 @@ class InicioActivity : AppCompatActivity() {
                             // De aquí en adelante, después de procesar todos los datos, crea el archivo CSV
                             createProductCsv(productos)
                             println("Se pudo")
+                            contador = 1
+                            inicioSeccion()
+                            mostrarMensajeSubidaCompleta()
+                            startActivity(intent)
 
                         } else {
                             // Maneja el caso en el que el resultado no sea "Archivo encontrado"
@@ -411,7 +492,6 @@ class InicioActivity : AppCompatActivity() {
 
         try {
             val csvWriter = FileWriter(file)
-
 
             // Escribir datos de productos
             for (product in productos) {
@@ -497,7 +577,8 @@ class InicioActivity : AppCompatActivity() {
     }
 
     private fun subirDrivePedido(){
-        val scriptUrl = "https://script.google.com/macros/s/AKfycbzKmqjG7A7ZjZIXsrCbGPmORumqjmmWQqbgObEd4f63VT5JwvoXMuGPGWZHRaSESNARvg/exec?function=doPost&nombreArchivo=1234_20230901.csv"
+        println("usuario = $usuarioGit")
+        val scriptUrl = "https://script.google.com/macros/s/AKfycbzKmqjG7A7ZjZIXsrCbGPmORumqjmmWQqbgObEd4f63VT5JwvoXMuGPGWZHRaSESNARvg/exec?function=doPost&nombreArchivo=$usuarioGit"
 
         val client = OkHttpClient()
 
@@ -508,8 +589,8 @@ class InicioActivity : AppCompatActivity() {
                     if (lista.estado == "cerrado") {
                         val jsonData = """
                         {
-                           "nombreArchivo": "1234_20230901.csv",
-                           "nuevosDatos": ["${lista.numPedido};${lista.vendedor};${lista.id_cliente};${lista.desc_producto};${lista.desc_producto};${lista.marca};${lista.tipo};${lista.precio};${lista.cnt};${lista.estado};${lista.fecha};${lista.codigo_producto};${lista.comentario}"]
+                           "nombreArchivo": "$usuarioGit",
+                           "nuevosDatos": ["${lista.numPedido};${lista.fecha};${lista.vendedor};${lista.id_cliente};${lista.codigo_producto};${lista.tipo};${lista.precio};${lista.cnt};${lista.estado};${lista.comentario}"]
                         }
                     """.trimIndent()
 
@@ -525,17 +606,28 @@ class InicioActivity : AppCompatActivity() {
                         if (response.isSuccessful) {
                             val responseBody = response.body?.string()
                             println("Elemento subido con éxito: $responseBody")
-                            editarPedido(poducto)
+                            //editarPedido(poducto)
                         } else {
                             println("Error en la solicitud POST para el elemento: ${lista.numPedido}")
                         }
                     }
                 }
+                startActivity(intent)
+
+
             } catch (e: IOException) {
                 println("Error de red: ${e.message}")
             }
         }
 
+    }
+    private fun mostrarMensajeSubidaCompleta() {
+        val snackbar = Snackbar.make(findViewById(android.R.id.content), "Subida completa", 5000) // Duración de 5 segundos
+        val view = snackbar.view
+        val params = view.layoutParams as FrameLayout.LayoutParams
+        params.gravity = Gravity.CENTER
+        view.layoutParams = params
+        snackbar.show()
     }
     private fun editarPedido(poducto: String) {
         val rutaArchivo = File(applicationContext.filesDir, "pedidos.txt")
@@ -596,8 +688,6 @@ class InicioActivity : AppCompatActivity() {
 
                 // Crea una lista de pedidos
 
-
-
                 // Itera a través de los objetos JSON y crea manualmente los objetos Pedido
                 for (i in 0 until jsonArray.length()) {
                     val pedido: JSONObject = jsonArray.getJSONObject(i)
@@ -618,27 +708,28 @@ class InicioActivity : AppCompatActivity() {
                     val precioT = pedido.getString("precioTotal")
                     val bono = pedido.getString("bonoT")
 
-
-
-                    arrayListE.add(PedidosModel(
-                        numPedido = numPedido,
-                        vendedor = vendedor,
-                        id_cliente = id_cliente,
-                        desc_cliente = desc_cliente,
-                        desc_producto = desc_producto,
-                        marca = marca,
-                        tipo = tipo,
-                        precio = precio,
-                        cnt = cnt,
-                        estado = estado,
-                        fecha = fecha,
-                        codigo_producto = codigo_producto,
-                        comentario = comentario,
-                        idPedido = idPedido,
-                        precioT = precioT,
-                        bonoT = bono))
-
-
+                    if (idPedido != "0" && cnt != "0") {
+                        arrayListE.add(
+                            PedidosModel(
+                                numPedido = numPedido,
+                                vendedor = vendedor,
+                                id_cliente = id_cliente,
+                                desc_cliente = desc_cliente,
+                                desc_producto = desc_producto,
+                                marca = marca,
+                                tipo = tipo,
+                                precio = precio,
+                                cnt = cnt,
+                                estado = estado,
+                                fecha = fecha,
+                                codigo_producto = codigo_producto,
+                                comentario = comentario,
+                                idPedido = idPedido,
+                                precioT = precioT,
+                                bonoT = bono
+                            )
+                        )
+                    }
                 }
                 println("eso papus "+ arrayListE)
 
@@ -649,7 +740,5 @@ class InicioActivity : AppCompatActivity() {
             println("Error al leer el archivo: ${e.message}")
         }
     }
-
-
 
 }

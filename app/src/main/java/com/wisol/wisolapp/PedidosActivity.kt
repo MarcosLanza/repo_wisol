@@ -1,8 +1,10 @@
 package com.wisol.wisolapp
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -30,7 +32,7 @@ class PedidosActivity : AppCompatActivity() {
         btnBack.setOnClickListener { navigateToBackWelcome() }
 
         val btnDelete = findViewById<FloatingActionButton>(R.id.fabDelete)
-        btnDelete.setOnClickListener { deletePedido() }
+        btnDelete.setOnClickListener { mostrarMensajeDeEliminacion() }
 
         val btnEdit = findViewById<FloatingActionButton>(R.id.fabEdit)
         btnEdit.setOnClickListener { editPedido() }
@@ -40,12 +42,21 @@ class PedidosActivity : AppCompatActivity() {
 
         val btnSubitDrive = findViewById<FloatingActionButton>(R.id.fabUpdate)
         btnSubitDrive.setOnClickListener { changestate() }
+        secion()
 
         geto()
+//        deletePeidoTxt()
 
 
 
 
+
+    }
+
+    private fun secion(){
+        val sharedPreferences = getSharedPreferences("MiPref", Context.MODE_PRIVATE)
+        val valorRecuperado = sharedPreferences.getString("miValor", "")
+        println("valor $valorRecuperado")
     }
 
 
@@ -100,6 +111,24 @@ class PedidosActivity : AppCompatActivity() {
     }
 
 
+    private fun mostrarMensajeDeEliminacion() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Confirmación")
+        builder.setMessage("¿Deseas eliminar esto?")
+
+        builder.setPositiveButton("Sí") { _, _ ->
+            // Aquí colocas el código que se ejecutará si el usuario hace clic en "Sí"
+            deletePedido()
+        }
+
+        builder.setNegativeButton("No") { _, _ ->
+            // Aquí colocas el código que se ejecutará si el usuario hace clic en "No" o cierra el diálogo
+        }
+
+        val dialog = builder.create()
+        dialog.show()
+    }
+
 
     private fun deletePedido(){
         if (idPodido != ""){
@@ -136,6 +165,60 @@ class PedidosActivity : AppCompatActivity() {
 
             // ID del pedido que deseas eliminar
             val idPedidoAEliminar = idPodido // Reemplaza con el ID que necesitas eliminar
+
+            // Eliminar objetos con el ID deseado
+            val objetosFiltrados = JSONArray()
+            for (i in 0 until listaDeObjetos.length()) {
+                val objeto = listaDeObjetos.getJSONObject(i)
+                val idPedido = objeto.getString("idPedido")
+
+                if (idPedido != idPedidoAEliminar) {
+                    objetosFiltrados.put(objeto)
+                }
+            }
+
+            // Convertir la lista de objetos filtrados a JSON
+            val nuevoContenido = objetosFiltrados.toString()
+
+            // Escribir el nuevo contenido en el archivo TXT
+            rutaArchivo.writeText(nuevoContenido)
+
+            println("Objeto con ID $idPedidoAEliminar eliminado exitosamente.")
+
+            if (objetosFiltrados.length() == 0) {
+                // El archivo está vacío después de eliminar, inicia una nueva actividad
+                finish()
+                startActivity(intent)
+            } else {
+                // El archivo aún tiene elementos, notificar cambios al adaptador
+                val recycler: RecyclerView = findViewById(R.id.recyclerView)
+                val adapter: RecyclerViewAdapter = recycler.adapter as RecyclerViewAdapter
+                adapter.notifyDataSetChanged()
+            }
+        } catch (e: Exception) {
+            println("Error al procesar el archivo: ${e.message}")
+        }
+
+    }
+
+    private fun deletePeidoTxtDuplicado() {
+        val rutaArchivo = File(applicationContext.filesDir, "pedidos.txt")
+
+        // Verificar si el archivo existe
+        if (!rutaArchivo.exists()) {
+            println("El archivo no existe.")
+            return
+        }
+
+        // Leer el contenido del archivo TXT
+        val contenido = rutaArchivo.readText()
+
+        try {
+            // Convertir el contenido JSON a una lista de objetos
+            val listaDeObjetos = JSONArray(contenido)
+
+            // ID del pedido que deseas eliminar
+            val idPedidoAEliminar = "0" // Reemplaza con el ID que necesitas eliminar
 
             // Eliminar objetos con el ID deseado
             val objetosFiltrados = JSONArray()
@@ -212,22 +295,25 @@ class PedidosActivity : AppCompatActivity() {
                     val idPedido = pedido.getString("idPedido")
                     val precioT = pedido.getString("precioTotal")
                     val bono = pedido.getString("bonoT")
-                    arrayList.add(PedidosModel(numPedido = numPedido,
-                        vendedor = vendedor,
-                        id_cliente = id_cliente,
-                        desc_cliente = desc_cliente,
-                        desc_producto = desc_producto,
-                        marca = marca,
-                        tipo = tipo,
-                        precio = precio,
-                        cnt = cnt,
-                        estado = estado,
-                        fecha = fecha,
-                        codigo_producto = codigo_producto,
-                        comentario = comentario,
-                        idPedido = idPedido,
-                        precioT = precioT,
-                        bonoT = bono))
+                    if(idPedido != "0"){
+                        arrayList.add(PedidosModel(numPedido = numPedido,
+                            vendedor = vendedor,
+                            id_cliente = id_cliente,
+                            desc_cliente = desc_cliente,
+                            desc_producto = desc_producto,
+                            marca = marca,
+                            tipo = tipo,
+                            precio = precio,
+                            cnt = cnt,
+                            estado = estado,
+                            fecha = fecha,
+                            codigo_producto = codigo_producto,
+                            comentario = comentario,
+                            idPedido = idPedido,
+                            precioT = precioT,
+                            bonoT = bono))
+                    }
+
                     arrayListN = arrayList.distinctBy { it.idPedido }.toMutableList()
                     val recycler : RecyclerView = findViewById(R.id.recyclerView)
                     val adapter : RecyclerViewAdapter = RecyclerViewAdapter()

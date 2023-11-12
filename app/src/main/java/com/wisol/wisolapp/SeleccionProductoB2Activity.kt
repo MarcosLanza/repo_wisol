@@ -33,6 +33,8 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
     var idPedidoFinal: String? = ""
     var change: String? = ""
     var changeA: String? = ""
+    var comentarioC: String? = ""
+
 
 
     var idProducto: String? = null
@@ -79,6 +81,8 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
         idProducto = intent.extras?.getString("ID_ProductoB").orEmpty()
         idClient = intent.extras?.getString("ID_ClientB").orEmpty()
         idPedidoFinal = intent.extras?.getString("ID_PedidoB").orEmpty()
+        comentarioC = intent.extras?.getString("ComentarioB").orEmpty()
+        println("hola coientario $comentarioC")
         change = intent.extras?.getString("CambioB").orEmpty()
 
         contadora = intent.extras?.getString("CONT").orEmpty()
@@ -104,6 +108,8 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
         editCodigo = findViewById<TextInputEditText>(R.id.inputFilterCodigoProducto)
 
         comentario = findViewById<TextInputEditText>(R.id.inputComentarioProducto)
+        editComentario()
+
 
         editCodigo.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -152,11 +158,14 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
         btnSave.setOnClickListener { navigateToSaveProduct() }
         val imcSt = findViewById<ImageView>(R.id.imclogoSt)
 
-        imcSt.setOnClickListener {    val intent = Intent(this, SeleccionProductoActivity::class.java)
+        imcSt.setOnClickListener {
+            val intent = Intent(this, SeleccionProductoActivity::class.java)
             intent.putExtra("ID_Producto", idProducto)
             intent.putExtra("ID_Client", idClient)
             intent.putExtra("ID_Pedido", idPedidoFinal)
             intent.putExtra("Cambio", changeA)
+            intent.putExtra("Comentario", textol.toString())
+
             println("este es el id final $idPedidoFinal")
             startActivity(intent) }
 
@@ -164,6 +173,11 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
 
 
 
+    }
+    private fun editComentario(){
+        if (comentarioC != "null"){
+            comentario.setText(comentarioC)
+        }
     }
     fun updateFiltro(){
         recyclerViewAdapter.updateFiltro(filtro.toString())
@@ -183,6 +197,8 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
             intent.putExtra("ID_Client", idClient)
             intent.putExtra("ID_Pedido", idPedidoFinal)
             intent.putExtra("Cambio", changeA)
+            intent.putExtra("Comentario", textol.toString())
+
             println("este es el id final $idPedidoFinal")
             startActivity(intent)
         }
