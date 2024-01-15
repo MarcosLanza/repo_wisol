@@ -41,6 +41,9 @@ class InicioActivity : AppCompatActivity() {
     var usu: String? = ""
     var rol: String? = ""
     var usuarioGit: String? = ""
+    var usuarioGitT: String? = ""
+
+    var user = ""
 
 
 
@@ -105,8 +108,8 @@ class InicioActivity : AppCompatActivity() {
         val sharedPreferences = getSharedPreferences("MiPref", Context.MODE_PRIVATE)
         val valorRecuperado = sharedPreferences.getString("miValor", "")
         println("valor $valorRecuperado")
-        if (valorRecuperado == "1"){
-            contador = 1
+        if (valorRecuperado == "2"){
+            contador = 2
         }
     }
 
@@ -114,19 +117,22 @@ class InicioActivity : AppCompatActivity() {
         val sharedPreferences = getSharedPreferences("MiUsuario", Context.MODE_PRIVATE)
         val valorRecuperado = sharedPreferences.getString("miValor", "")
         val calendario = Calendar.getInstance()
-        val hora = calendario.get(Calendar.HOUR_OF_DAY)
-        val minutos = calendario.get(Calendar.MINUTE)
-        val segundos = calendario.get(Calendar.SECOND)
+
         val ano = calendario.get(Calendar.YEAR)
         val mes = calendario.get(Calendar.MONTH) + 1  // Los meses comienzan desde 0, por lo que sumamos 1
         val dia = calendario.get(Calendar.DAY_OF_MONTH)
         val diaFormateado = String.format("%02d", dia)
+        val mesFormateado = String.format("%02d", mes)
 
 
-        usuarioGit = "$valorRecuperado"+"_$ano$mes$diaFormateado.csv"
+
+        usuarioGit = "$valorRecuperado"+"_$ano$mesFormateado$diaFormateado.csv"
+        usuarioGitT = "_$ano$mesFormateado$diaFormateado.csv"
+
+        user = valorRecuperado.toString()
 
 
-        println("valori $usuarioGit")
+        println("valori $user")
 
     }
 
@@ -149,7 +155,7 @@ class InicioActivity : AppCompatActivity() {
         }
     }
     private fun navigateToIncio() {
-        if (contador == 1){
+        if (contador == 2){
             val intent = Intent(this, PedidosActivity::class.java)
             startActivity(intent)
         }
@@ -168,6 +174,8 @@ class InicioActivity : AppCompatActivity() {
     private fun sincronizar(){
         sincronizarUsers()
         sincronizarProducts()
+        contador = 2
+
 
         //subirDrivePedido()
     }
@@ -176,7 +184,7 @@ class InicioActivity : AppCompatActivity() {
     private fun sincronizarUsers(){
         val usuarios: MutableList<UsersModel> = mutableListOf()
 
-        val url = "https://script.google.com/macros/s/AKfycbykgrf2MAkYOrlcgyupiA0laVPYM845yx0Tdj-qfFXcHeo7qwFNs_annyEzDwgY9UhF/exec?function=doGet&nombreArchivo=matrices_seguridad_usuarios_20231021_203555.csv"
+        val url = "https://script.google.com/macros/s/AKfycbykgrf2MAkYOrlcgyupiA0laVPYM845yx0Tdj-qfFXcHeo7qwFNs_annyEzDwgY9UhF/exec?function=doGet&nombreArchivo=matrices_seguridad_usuarios$usuarioGitT"
         val client = OkHttpClient()
         val request = Request.Builder()
             .url(url)
@@ -224,10 +232,10 @@ class InicioActivity : AppCompatActivity() {
                                 val usuarioId = fila[0]
                                 val usuario = fila[1]
                                 val password = fila[2]
-                                val correo = fila[3]
-                                val nombre = fila[4]
+                                val correo = fila[4]
+                                val nombre = fila[3]
                                 val funcionId = fila[5]
-                                val aplicacion = fila[5]
+                                val aplicacion = fila[6]
                                 val funcion = fila[7]
                                 val roleId = fila[8]
                                 val role = fila[9]
@@ -273,7 +281,7 @@ class InicioActivity : AppCompatActivity() {
     }
 
     private fun createCsvUsers(usuarios: MutableList<UsersModel>) {
-        val fileName = "usuarios.csv" // Cambia esto al nombre de archivo deseado
+        val fileName = "usuario_$user.csv" // Cambia esto al nombre de archivo deseado
         val directory = applicationContext.filesDir // Directorio interno de la aplicación
         val file = File(directory, fileName)
         try {
@@ -298,7 +306,7 @@ class InicioActivity : AppCompatActivity() {
     }
 
     private fun leercsvUser(){
-        val filePath = applicationContext.filesDir.absolutePath + "/usuarios.csv" // Ruta al archivo CSV
+        val filePath = applicationContext.filesDir.absolutePath + "/usuario_$user.csv" // Ruta al archivo CSV
 
         val usersList = mutableListOf<UsersModel>()
 
@@ -347,7 +355,7 @@ class InicioActivity : AppCompatActivity() {
         val productos: MutableList<ProductsModel> = mutableListOf()
 
         val url =
-            "https://script.google.com/macros/s/AKfycbykgrf2MAkYOrlcgyupiA0laVPYM845yx0Tdj-qfFXcHeo7qwFNs_annyEzDwgY9UhF/exec?function=doGet&nombreArchivo=matrices_productos_precios_20231021_203555.csv"
+            "https://script.google.com/macros/s/AKfycbykgrf2MAkYOrlcgyupiA0laVPYM845yx0Tdj-qfFXcHeo7qwFNs_annyEzDwgY9UhF/exec?function=doGet&nombreArchivo=matrices_productos_precios$usuarioGitT"
         val client = OkHttpClient()
         val request = Request.Builder()
             .url(url)
@@ -409,8 +417,8 @@ class InicioActivity : AppCompatActivity() {
                                 val ventaAct = fila[14]
                                 val bono = fila[15]
                                 val minimo = fila[16]
-                                println("usu = $vendedor + $usu")
-                                if (rol == "Vendedor"){
+                                println("usu = $vendedor + $usu"+"EL ROL ES $rol")
+                                if (rol == "2"){
                                     println("usuario final $usu")
                                     if (vendedor == usu) {
                                         val productModel = ProductsModel(
@@ -435,7 +443,8 @@ class InicioActivity : AppCompatActivity() {
 
                                         productos.add(productModel)
                                     }
-                                }else if(rol == "Supervisor"){
+                                }else if(rol == "1"){
+                                    println("entre supervidor")
                                     val productModel = ProductsModel(
                                         vendedor,
                                         idCliente,
@@ -463,10 +472,10 @@ class InicioActivity : AppCompatActivity() {
                             // De aquí en adelante, después de procesar todos los datos, crea el archivo CSV
                             createProductCsv(productos)
                             println("Se pudo")
-                            contador = 1
                             inicioSeccion()
-                            mostrarMensajeSubidaCompleta()
                             startActivity(intent)
+                            mostrarMensajeSubidaCompleta()
+
 
                         } else {
                             // Maneja el caso en el que el resultado no sea "Archivo encontrado"
@@ -486,7 +495,7 @@ class InicioActivity : AppCompatActivity() {
         })
     }
     private fun createProductCsv(productos: MutableList<ProductsModel>) {
-        val fileName = "productos.csv"
+        val fileName = "productos_$user.csv"
         val directory = applicationContext.filesDir
         val file = File(directory, fileName)
 
@@ -527,11 +536,10 @@ class InicioActivity : AppCompatActivity() {
         } catch (e: IOException) {
             e.printStackTrace()
         }
-
     }
 
     private fun leerproducts() {
-        val filePath = applicationContext.filesDir.absolutePath + "/productos.csv" // Ruta al archivo CSV
+        val filePath = applicationContext.filesDir.absolutePath + "/productos_$user.csv" // Ruta al archivo CSV
         val productsList = mutableListOf<ProductsModel>()
 
         try {
@@ -590,7 +598,7 @@ class InicioActivity : AppCompatActivity() {
                         val jsonData = """
                         {
                            "nombreArchivo": "$usuarioGit",
-                           "nuevosDatos": ["${lista.numPedido};${lista.fecha};${lista.vendedor};${lista.id_cliente};${lista.codigo_producto};${lista.tipo};${lista.precio};${lista.cnt};${lista.estado};${lista.comentario}"]
+                           "nuevosDatos": ["${lista.idPedido};${lista.fecha};${lista.vendedor};${lista.id_cliente};${lista.codigo_producto};${lista.tipo};${lista.precio};${lista.cnt};${lista.estado};${lista.comentario}"]
                         }
                     """.trimIndent()
 
@@ -606,9 +614,9 @@ class InicioActivity : AppCompatActivity() {
                         if (response.isSuccessful) {
                             val responseBody = response.body?.string()
                             println("Elemento subido con éxito: $responseBody")
-                            //editarPedido(poducto)
+                            editarPedido(poducto)
                         } else {
-                            println("Error en la solicitud POST para el elemento: ${lista.numPedido}")
+                            println("Error en la solicitud POST para el elemento: ${lista.idPedido}")
                         }
                     }
                 }
@@ -630,7 +638,7 @@ class InicioActivity : AppCompatActivity() {
         snackbar.show()
     }
     private fun editarPedido(poducto: String) {
-        val rutaArchivo = File(applicationContext.filesDir, "pedidos.txt")
+        val rutaArchivo = File(applicationContext.filesDir, "pedidos_$user.txt")
 
         // Verificar si el archivo existe
         if (!rutaArchivo.exists()) {
@@ -676,7 +684,7 @@ class InicioActivity : AppCompatActivity() {
     }
 
     private fun geto(){
-        val rutaArchivo = File(applicationContext.filesDir, "pedidos.txt")
+        val rutaArchivo = File(applicationContext.filesDir, "pedidos_$user.txt")
         try {
             if (rutaArchivo.exists()) {
                 val lector = BufferedReader(FileReader(rutaArchivo))
@@ -708,6 +716,7 @@ class InicioActivity : AppCompatActivity() {
                     val precioT = pedido.getString("precioTotal")
                     val bono = pedido.getString("bonoT")
 
+
                     if (idPedido != "0" && cnt != "0") {
                         arrayListE.add(
                             PedidosModel(
@@ -726,8 +735,7 @@ class InicioActivity : AppCompatActivity() {
                                 comentario = comentario,
                                 idPedido = idPedido,
                                 precioT = precioT,
-                                bonoT = bono
-                            )
+                                bonoT = bono)
                         )
                     }
                 }

@@ -1,12 +1,12 @@
 package com.wisol.wisolapp
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.widget.Button
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,7 +23,9 @@ import java.io.FileReader
 import java.io.FileWriter
 import java.io.IOException
 import java.lang.reflect.Type
+import java.text.NumberFormat
 import java.util.Calendar
+import java.util.Locale
 
 class SeleccionProductoB2Activity : AppCompatActivity() {
 
@@ -33,7 +35,11 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
     var idPedidoFinal: String? = ""
     var change: String? = ""
     var changeA: String? = ""
-    var comentarioC: String? = ""
+    var comentarioCo: String? = ""
+    var comentarioB: String? = ""
+    var loco: String? = ""
+    var user = ""
+
 
 
 
@@ -78,11 +84,12 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_seleccion_producto_b2)
+        userUsu()
         idProducto = intent.extras?.getString("ID_ProductoB").orEmpty()
         idClient = intent.extras?.getString("ID_ClientB").orEmpty()
         idPedidoFinal = intent.extras?.getString("ID_PedidoB").orEmpty()
-        comentarioC = intent.extras?.getString("ComentarioB").orEmpty()
-        println("hola coientario $comentarioC")
+        loco = intent.extras?.getString("Comentarios").orEmpty()
+        println("hola comentarioWenas $loco $idProducto")
         change = intent.extras?.getString("CambioB").orEmpty()
 
         contadora = intent.extras?.getString("CONT").orEmpty()
@@ -108,7 +115,9 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
         editCodigo = findViewById<TextInputEditText>(R.id.inputFilterCodigoProducto)
 
         comentario = findViewById<TextInputEditText>(R.id.inputComentarioProducto)
-        editComentario()
+        comentario.setText(loco)
+        leercomentario()
+
 
 
         editCodigo.addTextChangedListener(object : TextWatcher {
@@ -156,27 +165,28 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
 
         val btnSave = findViewById<Button>(R.id.btnSaveProB)
         btnSave.setOnClickListener { navigateToSaveProduct() }
-        val imcSt = findViewById<ImageView>(R.id.imclogoSt)
-
-        imcSt.setOnClickListener {
-            val intent = Intent(this, SeleccionProductoActivity::class.java)
-            intent.putExtra("ID_Producto", idProducto)
-            intent.putExtra("ID_Client", idClient)
-            intent.putExtra("ID_Pedido", idPedidoFinal)
-            intent.putExtra("Cambio", changeA)
-            intent.putExtra("Comentario", textol.toString())
-
-            println("este es el id final $idPedidoFinal")
-            startActivity(intent) }
-
-
 
 
 
     }
-    private fun editComentario(){
-        if (comentarioC != "null"){
-            comentario.setText(comentarioC)
+
+    private fun userUsu(){
+        val sharedPreferences = getSharedPreferences("MiUsuario", Context.MODE_PRIVATE)
+        val valorRecuperado = sharedPreferences.getString("miValor", "")
+
+
+        user = valorRecuperado.toString()
+
+
+        println("valori $user")
+
+    }
+
+
+    private fun leercomentario() {
+        if (comentarioB != ""){
+            comentario.setText(comentarioB)
+
         }
     }
     fun updateFiltro(){
@@ -223,14 +233,14 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
         println("vamos a guardar $selectedItemsA")
         val gson = Gson()
         for (lista in selectedItemsA){
-            lista.comentario = textol.toString()
+            lista.comentario = loco.toString()
 
         }
         selectedItemsA = selectedItemsA
         val json = gson.toJson(selectedItemsA)
 
         val directorioInterno = applicationContext.filesDir
-        val rutaArchivo = File(directorioInterno, "pedidos.txt")
+        val rutaArchivo = File(directorioInterno, "pedidos_$user.txt")
 
         try {
             if (rutaArchivo.exists()) {
@@ -258,7 +268,7 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
         }
     }
     private fun editarPedido(){
-        val rutaArchivo = File(applicationContext.filesDir, "pedidos.txt")
+        val rutaArchivo = File(applicationContext.filesDir, "pedidos_$user.txt")
 
         // Verificar si el archivo existe
         if (!rutaArchivo.exists()) {
@@ -342,7 +352,9 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
 
         val sumaTotal = selectedItemsC.sumByDouble { it.precioTotal.toDouble() }
         println("la suma total es: $sumaTotal")
-        precioP.text = sumaTotal.toString()
+        val formato = NumberFormat.getNumberInstance(Locale.getDefault())
+
+        precioP.text = formato.format(sumaTotal)
 
     }
 
@@ -401,7 +413,7 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
 
     //lee el archivo pedidos
     private fun leerproducts() {
-        val filePath = applicationContext.filesDir.absolutePath + "/productos.csv" // Ruta al archivo CSV
+        val filePath = applicationContext.filesDir.absolutePath + "/productos_$user.csv" // Ruta al archivo CSV
 
         try {
             CSVReader(FileReader(filePath)).use { csvReader ->
@@ -493,7 +505,6 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
                 precioTotal = "0",
                 bonoT = "0"
 
-
             )
         )
     }
@@ -505,13 +516,15 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
                     producto.cnt = productoB.cnt
                     producto.precioTotal = productoB.precioT
                     producto.bonoT = productoB.bonoT
+                    comentarioB = productoB.comentario
+                    println("comentario $comentarioB")
 
                 }
             }
         }
     }
     private fun geto(){
-        val rutaArchivo = File(applicationContext.filesDir, "pedidos.txt")
+        val rutaArchivo = File(applicationContext.filesDir, "pedidos_$user.txt")
         try {
             if (rutaArchivo.exists()) {
                 val lector = BufferedReader(FileReader(rutaArchivo))
@@ -538,7 +551,6 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
                     val precio = pedido.getString("precio")
                     val precioT = pedido.getString("precioTotal")
                     val bono = pedido.getString("bonoT")
-
                     val cnt = pedido.getString("cnt")
                     val estado = "abierto"
                     val fecha = pedido.getString("fecha")
@@ -563,8 +575,7 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
                                 comentario = comentario,
                                 idPedido = idPedido,
                                 precioT = precioT,
-                                bonoT = bono
-                            )
+                                bonoT = bono)
                         )
                     }
 

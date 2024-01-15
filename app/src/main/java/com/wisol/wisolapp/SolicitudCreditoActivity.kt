@@ -3,8 +3,11 @@ package com.wisol.wisolapp
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
+import android.hardware.Camera
 import android.os.Bundle
+import android.text.Editable
 import android.util.Base64
+import android.util.Patterns
 import android.view.Gravity
 import android.widget.Button
 import android.widget.FrameLayout
@@ -27,18 +30,20 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.io.IOException
+import java.util.Calendar
 
 class SolicitudCreditoActivity : AppCompatActivity() {
-    private val PICK_IMAGE_REQUEST = 1  // Código de solicitud para la selección de imágenes
     private val REQUEST_IMAGE_CAPTURE = 1  // Código de solicitud para la captura de imágenes
-    private lateinit var img1: ImageView
-    private lateinit var img2: ImageView
-    private lateinit var img3: ImageView
     private var contador = 0
     private var a = 0
     private var b = 0
     private var c = 0
-    private var d = 0
+    private var e = 0
+    private var f = 0
+    private var nameClient = ""
+    private val imagenes = mutableListOf<ImageView>()
+
+
 
 
 
@@ -51,9 +56,19 @@ class SolicitudCreditoActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_solicitud_credito)
 
-        img1 = findViewById(R.id.img1)
-        img2 = findViewById(R.id.img2)
-        img3 = findViewById(R.id.img3)
+        val img1: ImageView = findViewById(R.id.img1)
+        val img2: ImageView = findViewById(R.id.img2)
+        val img3: ImageView = findViewById(R.id.img3)
+
+        imagenes.addAll(listOf(img1, img2, img3))
+
+        for ((index, image) in imagenes.withIndex()) {
+            image.setOnClickListener {
+                // Llamas directamente a la función para tomar la foto en lugar de llamar a onActivityResult
+                tomarFoto(index + 1)
+            }
+        }
+
 
         val lugarFecha = findViewById<TextInputEditText>(R.id.inputLugarFecha)
         val nombreDueno = findViewById<TextInputEditText>(R.id.inputNombreDueño)
@@ -71,49 +86,20 @@ class SolicitudCreditoActivity : AppCompatActivity() {
         val facturacionCorreoElectronico = findViewById<TextInputEditText>(R.id.inputFacturacionCorreoElectronico)
 
 
+        val email = correoElectronico.text
+        val emailA = facturacionCorreoElectronico.text
+
 
 
 
 
 
         val buttonTomarFoto = findViewById<Button>(R.id.btnAdjuntarImagen)
+        val atras = findViewById<Button>(R.id.btnAtrasImagen)
 
-        img1.setOnClickListener {   // Crea un Intent para abrir la cámara
-            val intent = Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE)
+        atras.setOnClickListener { backtras() }
 
-            // Comprueba si hay una actividad de cámara disponible
-            if (intent.resolveActivity(packageManager) != null) {
-                // Inicia la actividad de captura de imágenes
-                startActivityForResult(intent, REQUEST_IMAGE_CAPTURE)
-                contador = 1
-            }else{
-                println("no hay camara")
-            }
-        }
-        img2.setOnClickListener {   // Crea un Intent para abrir la cámara
-            val intent = Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE)
 
-            // Comprueba si hay una actividad de cámara disponible
-            if (intent.resolveActivity(packageManager) != null) {
-                // Inicia la actividad de captura de imágenes
-                startActivityForResult(intent, REQUEST_IMAGE_CAPTURE)
-                contador = 2
-            }else{
-                println("no hay camara")
-            }
-        }
-        img3.setOnClickListener {   // Crea un Intent para abrir la cámara
-            val intent = Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE)
-
-            // Comprueba si hay una actividad de cámara disponible
-            if (intent.resolveActivity(packageManager) != null) {
-                // Inicia la actividad de captura de imágenes
-                startActivityForResult(intent, REQUEST_IMAGE_CAPTURE)
-                contador = 3
-            }else{
-                println("no hay camara")
-            }
-        }
 
         buttonTomarFoto.setOnClickListener {
             if (lugarFecha.text.isNullOrBlank() ||
@@ -133,13 +119,49 @@ class SolicitudCreditoActivity : AppCompatActivity() {
                 // Al menos uno de los campos está vacío, realiza alguna acción aquí
                 // Por ejemplo, muestra un mensaje de error o toma alguna otra acción.
                 println("faltan cosas")
+                println("este es el correo ${correoElectronico.text}")
+                if (isValidEmail(email)) {
+                    // El formato del correo electrónico es válido
+                    correoElectronico.error = null
+                    e = 1
+                    if(isValidEmail(emailA)){
+                        facturacionCorreoElectronico.error = null
+                        f = 1
+
+                    }else
+                    {
+                        // El formato del correo electrónico no es válido
+                        facturacionCorreoElectronico.error = "Correo electrónico no válido"
+                        f = 0
+                        facturacionCorreoElectronico.text = null
+
+                    }
+
+                }else
+                {
+                    // El formato del correo electrónico no es válido
+                    correoElectronico.error = "Correo electrónico no válido"
+                    if(isValidEmail(emailA)){
+                        facturacionCorreoElectronico.error = null
+                        f = 1
+
+                    }else
+                    {
+                        f = 0
+                        // El formato del correo electrónico no es válido
+                        facturacionCorreoElectronico.error = "Correo electrónico no válido"
+
+                    }
+                }
                 mostrarMensajeSubidaCompleta()
                 println("lugar="+lugarFecha.text)
 
             } else {
-                d = 1
-                if (a == 1 && b == 1 && c ==1 && d == 1) {
-                    subirImage()
+                println("entre $f")
+
+                nameClient = nombreDueno.text.toString()
+                if (a == 1 && b == 1 && c ==1) {
+                    println("confirmo")
                     println("lugar="+lugarFecha)
                     val scriptUrl = "https://script.google.com/macros/s/AKfycbzy8NU8JJAihzndD8EaqjGO6BZc6SWUZ6FiUV4_BmJ2lNTNGo-0Wlyz2jOKwm_mg8B4/exec?function=doPost&nombreArchivo=CLIENTES.csv"
 
@@ -166,6 +188,8 @@ class SolicitudCreditoActivity : AppCompatActivity() {
                             if (response.isSuccessful) {
                                 val responseBody = response.body?.string()
                                 println("Elemento subido con éxito: $responseBody")
+                                subirImage() // Llamada a la función para subir la imagen
+
                             } else {
                                 println("Error en la solicitud POST para el elemento: ")
                             }
@@ -183,48 +207,90 @@ class SolicitudCreditoActivity : AppCompatActivity() {
 
 
     }
+    private fun tomarFoto(indice: Int) {
+        val intent = Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE)
+
+        if (intent.resolveActivity(packageManager) != null) {
+            // Especifica que se debe usar la cámara trasera
+            intent.putExtra("android.intent.extras.CAMERA_FACING", Camera.CameraInfo.CAMERA_FACING_BACK)
+            intent.putExtra("android.intent.extras.LENS_FACING_FRONT", 0)
+            intent.putExtra("android.intent.extra.USE_FRONT_CAMERA", false)
+
+            // Asegúrate de que la orientación sea la correcta
+            intent.putExtra("android.intent.extra.ROTATION", windowManager.defaultDisplay.rotation)
+
+            // Inicia la actividad de captura de imágenes
+            startActivityForResult(intent, REQUEST_IMAGE_CAPTURE)
+            contador = indice
+        } else {
+            println("No hay aplicación de cámara disponible.")
+        }
+    }
+
+    private fun backtras() {
+        val intent = Intent(this, InicioActivity::class.java)
+        startActivity(intent)
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
-            val imageBitmap = data?.extras?.get("data") as Bitmap
+            val imageBitmap = data?.extras?.get("data") as Bitmap?
 
-            if (contador == 1) {
-                img1.setImageBitmap(imageBitmap)
-                b = 1
-            } else if (contador == 2) {
-                img2.setImageBitmap(imageBitmap)
-                a = 1
-            } else if (contador == 3) {
-                img3.setImageBitmap(imageBitmap)
-                c = 1
+            if (contador in 1..3 && imageBitmap != null) {
+                imagenes[contador - 1].setImageBitmap(imageBitmap)
+                when (contador) {
+                    1 -> a = 1
+                    2 -> b = 1
+                    3 -> c = 1
+                }
             }
-
-            subirImage() // Llamada a la función para subir la imagen
         }
     }
+
+
+    private fun isValidEmail(email: Editable?): Boolean {
+        println("correo es este $email")
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches()
+
+    }
     private fun subirImage() {
-        if (a == 1 && b == 1 && c ==1 && d == 1) {
-            val scriptUrl = "https://script.google.com/macros/s/AKfycbzJmkF8nuqI__BGe1VRPoMZf8iPf65n7ZaFbAdwxnK456H-ax3AiDcK1iWRKBMYgyHJRQ/exec?function=doPost"
+
+        if (a == 1 && b== 1 && c == 1) {
+            val calendario = Calendar.getInstance()
+            val ano = calendario.get(Calendar.YEAR)
+            val mes = calendario.get(Calendar.MONTH) + 1
+            val dia = calendario.get(Calendar.DAY_OF_MONTH)
+            val diaFormateado = String.format("%02d", dia)
+            val mesFormateado = String.format("%02d", mes)
+
+
+            val scriptUrl =
+                "https://script.google.com/macros/s/AKfycbwdem32q8MDn5w8U_GGmGiAHyEtTTnklVmvn5bSm8cpbc5Sj90kPQ66fmYAZjRKVLnD/exec?function=doPost"
 
             val jsonBody = JSONObject().apply {
                 put("imagenes", JSONArray().apply {
-                    put(JSONObject().apply {
-                        put("base64", convertBitmapToBase64(img1.drawable.toBitmap()))
-                        put("fileName", "imagen_${System.currentTimeMillis()}_1.jpg")
-                    })
-                    put(JSONObject().apply {
-                        put("base64", convertBitmapToBase64(img2.drawable.toBitmap()))
-                        put("fileName", "imagen_${System.currentTimeMillis()}_2.jpg")
-                    })
-                    put(JSONObject().apply {
-                        put("base64", convertBitmapToBase64(img3.drawable.toBitmap()))
-                        put("fileName", "imagen_${System.currentTimeMillis()}_3.jpg")
-                    })
+                    val currentMillis = System.currentTimeMillis()
+
+                    for ((index, imageView) in imagenes.withIndex()) {
+                        val fileName =
+                            "$nameClient-$ano$mesFormateado$diaFormateado-$index.jpg"
+                        println("Imagen $index - Nombre: $fileName")
+
+                        val base64Image =
+                            convertBitmapToBase64(imageView.drawable.toBitmap())
+                        println("Imagen $index - Base64: $base64Image")
+
+                        put(JSONObject().apply {
+                            put("base64", base64Image)
+                            put("fileName", fileName)
+                        })
+                    }
                 })
             }
 
-            val requestBody = jsonBody.toString().toRequestBody("application/json".toMediaType())
+            val requestBody =
+                jsonBody.toString().toRequestBody("application/json".toMediaType())
 
             val client = OkHttpClient()
             val request = Request.Builder()
@@ -237,6 +303,7 @@ class SolicitudCreditoActivity : AppCompatActivity() {
                     if (response.isSuccessful) {
                         val responseBody = response.body?.string()
                         println("Respuesta del servidor: $responseBody")
+                        backWelcome()
                     } else {
                         println("Error en la solicitud HTTP: ${response.code} - ${response.message}")
                     }
@@ -256,13 +323,23 @@ class SolicitudCreditoActivity : AppCompatActivity() {
         return Base64.encodeToString(byteArray, Base64.DEFAULT)
     }
 
+
     private fun mostrarMensajeSubidaCompleta() {
-        val snackbar = Snackbar.make(findViewById(android.R.id.content), "Faltan campos por llenar", 5000) // Duración de 5 segundos
+        val snackbar = Snackbar.make(
+            findViewById(android.R.id.content),
+            "Faltan campos por llenar",
+            5000
+        ) // Duración de 5 segundos
         val view = snackbar.view
         val params = view.layoutParams as FrameLayout.LayoutParams
         params.gravity = Gravity.CENTER
         view.layoutParams = params
         snackbar.show()
+    }
+
+    private fun backWelcome(){
+        val intent = Intent(this, InicioActivity::class.java)
+        startActivity(intent)
     }
 
 }

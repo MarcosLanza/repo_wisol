@@ -6,6 +6,10 @@
     android:layout_height="match_parent"
     tools:context=".SeleccionProductoActivity">
 
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
@@ -13,82 +17,51 @@
         android:orientation="vertical">
 
         <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="80dp"
-                android:layout_marginBottom="20dp"
-                app:cardBackgroundColor="@color/nabvar"
-
-                >
-
-                <ImageView
-                    android:id="@+id/imclogo1"
-                    android:layout_width="120dp"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="start|center_vertical"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:src="@drawable/ic_logo1" />
-
-                <TextView
-                    android:layout_width="160dp"
-                    android:layout_height="50dp"
-                    android:layout_gravity="end|center_vertical"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="50dp"
-                    android:layout_marginBottom="8dp"
-                    android:text="#Articulos"
-                    android:textSize="30dp"
-                    android:textStyle="bold" />
-
-
-            </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_marginBottom="20dp"
-            app:cardBackgroundColor="@color/nabvar">
+            android:layout_height="90dp"
+            android:layout_marginBottom="10dp"
+            app:cardBackgroundColor="@color/nabvar"
+
+            >
 
             <ImageView
-                android:id="@+id/imclogoSt"
+                android:id="@+id/imclogo1"
                 android:layout_width="120dp"
-                android:layout_height="40dp"
+                android:layout_height="match_parent"
                 android:layout_gravity="start|center_vertical"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:src="@drawable/ic_shopping_cart_plus" >
-            </ImageView>
+                android:src="@drawable/ic_logo1" />
 
-            <ImageView
-                android:id="@+id/imclogoLesst"
-                android:layout_width="120dp"
-                android:layout_height="40dp"
+            <TextView
+                android:id="@+id/slogan"
+                android:layout_width="260dp"
+                android:layout_height="60dp"
                 android:layout_gravity="end|center_vertical"
-                android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="50dp"
                 android:layout_marginBottom="8dp"
-                android:src="@drawable/ic_shopping_cart_less" >
-
-
-            </ImageView>
-
+                android:text="#Articulos"
+                android:textSize="25dp"
+                android:textStyle="bold" />
 
 
         </androidx.cardview.widget.CardView>
+
+
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_margin="16dp">
+            android:layout_margin="10dp">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/etFilterCodigoProducto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Codigo">
+                android:hint="Nombre Producto">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/inputFilterCodigoProducto"
@@ -103,7 +76,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_margin="16dp">
+            android:layout_margin="10dp">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/etFilterComentarioProducto"
@@ -124,7 +97,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="550dp"
+            android:layout_height="485dp"
             android:orientation="vertical">
             <TableLayout
                 android:layout_width="match_parent"
@@ -139,6 +112,19 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/blue">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:textSize="20dp"
+
+                        android:text="Codigo"
+                        android:textColor="@color/white"
+                        android:gravity="center"/>
+                    <View
+                        android:layout_width="2dp"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/white" />
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="50dp"
@@ -181,19 +167,7 @@
                         android:layout_height="match_parent"
                         android:background="@android:color/white" />
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="2"
-                        android:textSize="20dp"
 
-                        android:text="Codigo"
-                        android:textColor="@color/white"
-                        android:gravity="center"/>
-                    <View
-                        android:layout_width="2dp"
-                        android:layout_height="match_parent"
-                        android:background="@android:color/white" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -216,6 +190,20 @@
                         android:textSize="19dp"
 
                         android:text="Descuento"
+                        android:textColor="@color/white"
+                        android:gravity="center"/>
+                    <View
+                        android:layout_width="2dp"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/white" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:textSize="19dp"
+
+                        android:text="Impuesto"
                         android:textColor="@color/white"
                         android:gravity="center"/>
                     <View
@@ -478,22 +466,47 @@
             </TableRow>
         </TableLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="20dp"
+            >
+
+            <Button
+                android:id="@+id/btnBackPro"
+                android:layout_width="170dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="10dp"
+                android:layout_marginVertical="16dp"
+                android:backgroundTint="@color/blue"
+                android:text="Atrás"
+                app:cornerRadius='10dp'
+
+                app:iconTint="@android:color/white" />
+            <Button
+                android:id="@+id/btnSavePro"
+                android:layout_width="170dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="10dp"
+                android:layout_marginVertical="16dp"
+                android:backgroundTint="@color/blue"
+                android:text="Siguiente"
+                app:cornerRadius='10dp'
+
+                app:iconTint="@android:color/white" />
+
+        </LinearLayout>
 
 
-        <Button
-            android:id="@+id/btnSavePro"
-            android:layout_width="170dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="10dp"
-            android:layout_marginVertical="16dp"
-            android:backgroundTint="@color/blue"
-            android:text="Guardar"
-            app:cornerRadius='10dp'
-
-            app:iconTint="@android:color/white" />
 
 
     </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+</ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,12 +3,14 @@ package com.wisol.wisolapp
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
@@ -22,11 +24,14 @@ class PedidosActivity : AppCompatActivity() {
     var idPodido = ""
     var idCliente = ""
     var estadoP = ""
+    var user = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pedidos)
+        userUsu()
+
 
         val btnBack = findViewById<Button>(R.id.btnBackPedido)
         btnBack.setOnClickListener { navigateToBackWelcome() }
@@ -41,7 +46,7 @@ class PedidosActivity : AppCompatActivity() {
         btnPedidosNew.setOnClickListener { navigateToSlectionClient() }
 
         val btnSubitDrive = findViewById<FloatingActionButton>(R.id.fabUpdate)
-        btnSubitDrive.setOnClickListener { changestate() }
+        btnSubitDrive.setOnClickListener { if (idPodido != ""){changestate()} }
         secion()
 
         geto()
@@ -58,6 +63,19 @@ class PedidosActivity : AppCompatActivity() {
         val valorRecuperado = sharedPreferences.getString("miValor", "")
         println("valor $valorRecuperado")
     }
+
+    private fun userUsu(){
+        val sharedPreferences = getSharedPreferences("MiUsuario", Context.MODE_PRIVATE)
+        val valorRecuperado = sharedPreferences.getString("miValor", "")
+
+
+        user = valorRecuperado.toString()
+
+
+        println("valori $user")
+
+    }
+
 
 
     private fun navigateToBackWelcome(){
@@ -77,11 +95,18 @@ class PedidosActivity : AppCompatActivity() {
             intent.putExtra("ID_Client", idCliente)
 
             startActivity(intent)
+        }else{
+            mostrarMensajeInvalido()
         }
 
     }
-    private fun changestate(){
-        val rutaArchivo = File(applicationContext.filesDir, "pedidos.txt")
+    fun mostrarMensajeInvalido() {
+        val rootView = findViewById<View>(android.R.id.content)
+        Snackbar.make(rootView, "Este pedido se encuentra cerrado", Snackbar.LENGTH_LONG).show()
+    }
+    private fun changestate() {
+        val idPedidoG = idPodido
+        val rutaArchivo = File(applicationContext.filesDir, "pedidos_$user.txt")
 
         try {
             if (rutaArchivo.exists()) {
@@ -89,25 +114,30 @@ class PedidosActivity : AppCompatActivity() {
                 val contenido = rutaArchivo.readText()
                 val jsonArray = JSONArray(contenido)
 
-                // Modifica el atributo "estado" a "cerrado" en todos los objetos
+                // Recorre todos los pedidos en el archivo
                 for (i in 0 until jsonArray.length()) {
                     val pedidoJson = jsonArray.getJSONObject(i)
-                    pedidoJson.put("estado", "cerrado")
+                    val idPedido = pedidoJson.getString("idPedido")
+
+                    if (idPedido == idPedidoG) {
+                        // Actualiza el atributo "estado" a "cerrado" para el pedido específico
+                        pedidoJson.put("estado", "cerrado")
+                    }
                 }
 
                 // Escribe el JSONArray actualizado en el archivo
                 rutaArchivo.writeText(jsonArray.toString())
 
-                println("Estado de todos los pedidos actualizado a 'cerrado' correctamente.")
+                println("Estado de todos los pedidos con id $idPedidoG actualizado a 'cerrado' correctamente.")
             } else {
                 println("El archivo no existe.")
             }
         } catch (e: Exception) {
             println("Error al leer o escribir en el archivo: ${e.message}")
         }
+
         val intent = Intent(this, PedidosActivity::class.java)
         startActivity(intent)
-
     }
 
 
@@ -148,7 +178,7 @@ class PedidosActivity : AppCompatActivity() {
     }
 
     private fun deletePeidoTxt(){
-        val rutaArchivo = File(applicationContext.filesDir, "pedidos.txt")
+        val rutaArchivo = File(applicationContext.filesDir, "pedidos_$user.txt")
 
         // Verificar si el archivo existe
         if (!rutaArchivo.exists()) {
@@ -202,7 +232,7 @@ class PedidosActivity : AppCompatActivity() {
     }
 
     private fun deletePeidoTxtDuplicado() {
-        val rutaArchivo = File(applicationContext.filesDir, "pedidos.txt")
+        val rutaArchivo = File(applicationContext.filesDir, "pedidos_$user.txt")
 
         // Verificar si el archivo existe
         if (!rutaArchivo.exists()) {
@@ -259,7 +289,7 @@ class PedidosActivity : AppCompatActivity() {
 
 
     private fun geto(){
-        val rutaArchivo = File(applicationContext.filesDir, "pedidos.txt")
+        val rutaArchivo = File(applicationContext.filesDir, "pedidos_$user.txt")
 
         try {
             if (rutaArchivo.exists()) {
@@ -295,6 +325,7 @@ class PedidosActivity : AppCompatActivity() {
                     val idPedido = pedido.getString("idPedido")
                     val precioT = pedido.getString("precioTotal")
                     val bono = pedido.getString("bonoT")
+
                     if(idPedido != "0"){
                         arrayList.add(PedidosModel(numPedido = numPedido,
                             vendedor = vendedor,
@@ -314,7 +345,7 @@ class PedidosActivity : AppCompatActivity() {
                             bonoT = bono))
                     }
 
-                    arrayListN = arrayList.distinctBy { it.idPedido }.toMutableList()
+                    arrayListN = arrayList
                     val recycler : RecyclerView = findViewById(R.id.recyclerView)
                     val adapter : RecyclerViewAdapter = RecyclerViewAdapter()
 

@@ -23,6 +23,7 @@ import org.json.JSONObject
 import java.io.FileReader
 import java.io.IOException
 import java.security.MessageDigest
+import java.util.Calendar
 
 
 class MainActivity : AppCompatActivity() {
@@ -42,6 +43,7 @@ class MainActivity : AppCompatActivity() {
         val btnStart = findViewById<Button>(R.id.btnStart)
         val inputName = findViewById<TextInputEditText>(R.id.inputUser)
         val inputPass = findViewById<TextInputEditText>(R.id.inputPass)
+        loco()
 
 
         btnStart.setOnClickListener {
@@ -158,7 +160,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun realizarSolicitudHTTP() {
-        val url = "https://script.google.com/macros/s/AKfycbykgrf2MAkYOrlcgyupiA0laVPYM845yx0Tdj-qfFXcHeo7qwFNs_annyEzDwgY9UhF/exec?function=doGet&nombreArchivo=matrices_seguridad_usuarios_20231021_203555.csv"
+        var roto = 0
+        val calendario = Calendar.getInstance()
+
+        val ano = calendario.get(Calendar.YEAR)
+        val mes = calendario.get(Calendar.MONTH) + 1  // Los meses comienzan desde 0, por lo que sumamos 1
+        val dia = calendario.get(Calendar.DAY_OF_MONTH)
+        val diaFormateado = String.format("%02d", dia)
+        val mesFormateado = String.format("%02d", mes)
+
+        val fechaj = "_$ano$mesFormateado$diaFormateado.csv"
+        println("fecha $fechaj")
+        val url = "https://script.google.com/macros/s/AKfycbykgrf2MAkYOrlcgyupiA0laVPYM845yx0Tdj-qfFXcHeo7qwFNs_annyEzDwgY9UhF/exec?function=doGet&nombreArchivo=matrices_seguridad_usuarios$fechaj"
         val client = OkHttpClient()
         val request = Request.Builder()
             .url(url)
@@ -180,6 +193,7 @@ class MainActivity : AppCompatActivity() {
                         if (responseObject.getString("resultado") == "Archivo encontrado") {
                             // Obtén el array "datosCSV" del JSON
                             val datosCSVArray = responseObject.getJSONArray("datosCSV")
+
 
                             // Crea una lista mutable para almacenar los datos CSV formateados
                             val datosCSVFormattedList: MutableList<List<String>> = mutableListOf()
@@ -216,18 +230,20 @@ class MainActivity : AppCompatActivity() {
                                     if (usuario == nombreBuscado && password == passwordCodificado){
                                         println("password es "+password)
                                         idUsuario = usuario
-                                        rol = role
+                                        rol = roleId
                                         println("Hola muchachos $usuario")
                                         inicioSeccion()
+                                        roto = 1
                                         navigateToIncio()
+
                                     }
 
                                     println("Bye Muchachos")
                                     println("password es "+password+" "+nombre)
-                                    mostrarMensajeInvalido()
                                     //navigateToIncio()
 
                                 }
+
 
 
                                 }
@@ -241,7 +257,10 @@ class MainActivity : AppCompatActivity() {
                         e.printStackTrace()
                     }
 
+                    if (roto == 0){
+                        mostrarMensajeInvalido()
 
+                    }
                 } else {
                     // Manejar errores de respuesta
                 }
@@ -262,9 +281,15 @@ class MainActivity : AppCompatActivity() {
         val sharedPreferences = getSharedPreferences("MiUsuario", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putString("miValor", "$idUsuario")
+        println("hola inicio $idUsuario")
         editor.apply()
 
 
+    }
+    private fun loco(){
+        val sharedPreferences = getSharedPreferences("MiPref", Context.MODE_PRIVATE)
+        val valorRecuperado = sharedPreferences.getString("miValor", "")
+        println("valor $valorRecuperado")
     }
 
 

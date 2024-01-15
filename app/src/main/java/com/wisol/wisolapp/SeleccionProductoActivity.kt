@@ -1,12 +1,12 @@
 package com.wisol.wisolapp
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.widget.Button
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,7 +23,9 @@ import java.io.FileReader
 import java.io.FileWriter
 import java.io.IOException
 import java.lang.reflect.Type
+import java.text.NumberFormat
 import java.util.Calendar
+import java.util.Locale
 
 class SeleccionProductoActivity : AppCompatActivity() {
 
@@ -36,8 +38,7 @@ class SeleccionProductoActivity : AppCompatActivity() {
     var change: String? = ""
     var changeA: String? = ""
     var comentarioB: String? = ""
-
-
+    var user = ""
     var idClient = ""
     var selectedItemsA: MutableList<ProductosModel> = ArrayList() // Lista para rastrear elementos seleccionados
     var selectedItemsB: MutableList<ProductosModel> = ArrayList() // Lista para rastrear elementos seleccionados
@@ -52,6 +53,7 @@ class SeleccionProductoActivity : AppCompatActivity() {
     private lateinit var min:TextView
     private lateinit var cantidadBono:TextView
     private lateinit var recyclerViewAdapter: RecyclerViewAdapterProductos
+    private lateinit var slogan:TextView
 
 
 
@@ -78,6 +80,7 @@ class SeleccionProductoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_seleccion_producto)
+        userUsu()
         idProducto = intent.extras?.getString("ID_Producto").orEmpty()
         idClient = intent.extras?.getString("ID_Client").orEmpty()
         idPedidoFinal = intent.extras?.getString("ID_Pedido").orEmpty()
@@ -101,14 +104,16 @@ class SeleccionProductoActivity : AppCompatActivity() {
         precioP = findViewById(R.id.tvPrecio)
         min = findViewById(R.id.tvMin)
         cantidadBono = findViewById(R.id.tvCantidadBono)
+        slogan = findViewById(R.id.slogan)
 
 
 
         editCodigo = findViewById<TextInputEditText>(R.id.inputFilterCodigoProducto)
 
         comentario = findViewById(R.id.inputComentarioProductoA)
-        editComentario()
         leerproducts()
+        editComentario()
+
         leercomentario()
 
         editCodigo.addTextChangedListener(object : TextWatcher {
@@ -156,27 +161,27 @@ class SeleccionProductoActivity : AppCompatActivity() {
 
         val btnSave = findViewById<Button>(R.id.btnSavePro)
         btnSave.setOnClickListener { navigateToSaveProduct() }
-         val imcSt = findViewById<ImageView>(R.id.imclogoLesst)
-
-        imcSt.setOnClickListener { val intent = Intent(this, SeleccionProductoB2Activity::class.java)
-            intent.putExtra("ID_ProductoB", idProducto)
-            intent.putExtra("ID_ClientB", idClient)
-            intent.putExtra("ID_PedidoB", idPedidoFinal)
-            intent.putExtra("ComentarioB", comentarioB)
-
-            intent.putExtra("CambioB", changeA)
-            println("este es el id final $idPedidoFinal")
-            startActivity(intent)
-        }
-
-
-
-
+        val btnBack = findViewById<Button>(R.id.btnBackPro)
+        btnBack.setOnClickListener { backo() }
 
     }
+
+    private fun userUsu(){
+        val sharedPreferences = getSharedPreferences("MiUsuario", Context.MODE_PRIVATE)
+        val valorRecuperado = sharedPreferences.getString("miValor", "")
+
+
+        user = valorRecuperado.toString()
+
+
+        println("valori $user")
+
+    }
+
     private fun editComentario(){
         if (comentarioC != "null"){
             comentario.setText(comentarioC)
+            println("hola comentarioC $comentarioC")
         }
     }
 
@@ -189,6 +194,11 @@ class SeleccionProductoActivity : AppCompatActivity() {
 
     fun updateFiltro(){
         recyclerViewAdapter.updateFiltro(filtro.toString())
+
+    }
+    private fun backo(){
+        val intent = Intent(this, SeleccionClienteActivity::class.java)
+        startActivity(intent)
 
     }
 
@@ -205,10 +215,11 @@ class SeleccionProductoActivity : AppCompatActivity() {
             intent.putExtra("ID_ProductoB", idProducto)
             intent.putExtra("ID_ClientB", idClient)
             intent.putExtra("ID_PedidoB", idPedidoFinal)
-            intent.putExtra("ComentarioB", textol.toString())
+            val toy = comentario.text
+            intent.putExtra("Comentarios", "$toy")
 
+            println("hola comentario THE "+ toy)
             intent.putExtra("CambioB", changeA)
-            println("este es el id final $idPedidoFinal")
             startActivity(intent)
         }
 
@@ -230,17 +241,17 @@ class SeleccionProductoActivity : AppCompatActivity() {
     }
 
     private fun guardarPedido(){
-        println("vamos a guardar $selectedItemsA")
         val gson = Gson()
         for (lista in selectedItemsA){
-            lista.comentario = textol.toString()
+            lista.comentario = comentario.text.toString()
+
 
         }
         selectedItemsA = selectedItemsA
         val json = gson.toJson(selectedItemsA)
 
         val directorioInterno = applicationContext.filesDir
-        val rutaArchivo = File(directorioInterno, "pedidos.txt")
+        val rutaArchivo = File(directorioInterno, "pedidos_$user.txt")
 
         try {
             if (rutaArchivo.exists()) {
@@ -268,7 +279,7 @@ class SeleccionProductoActivity : AppCompatActivity() {
         }
     }
     private fun editarPedido(){
-        val rutaArchivo = File(applicationContext.filesDir, "pedidos.txt")
+        val rutaArchivo = File(applicationContext.filesDir, "pedidos_$user.txt")
 
         // Verificar si el archivo existe
         if (!rutaArchivo.exists()) {
@@ -331,6 +342,7 @@ class SeleccionProductoActivity : AppCompatActivity() {
             mesActual.text = pro.venta_act
             mesAnterior.text = pro.venta_ant
             minimo = pro.minimo.toInt()
+
             preze = pro.precio.toDouble()
             min.text = minimo.toString()
             cantidadBono.text = pro.bono
@@ -351,13 +363,14 @@ class SeleccionProductoActivity : AppCompatActivity() {
     private fun updatePrecio(){
         val sumaTotal = selectedItemsC.sumByDouble { it.precioTotal.toDouble() }
         println("la suma total es: $sumaTotal")
-        precioP.text = sumaTotal.toString()
+        val formato = NumberFormat.getNumberInstance(Locale.getDefault())
+
+        precioP.text = formato.format(sumaTotal)
 
     }
 
     // esta funcion guarda el producto
     fun save(selectedItems: MutableList<ProductosModel>) {
-        println("Ya llegue "+selectedItems)
         val calendario = Calendar.getInstance()
         val hora = calendario.get(Calendar.HOUR_OF_DAY)
         val minutos = calendario.get(Calendar.MINUTE)
@@ -375,20 +388,15 @@ class SeleccionProductoActivity : AppCompatActivity() {
             }else{
                 lista.idPedido = "$idPedidoFinal"
                 println("no, es nulo $idPedidoFinal")
-
-
             }
             lista.fecha = "$dia/$mes/$año"
             println("Hola comentaRIO"+textol)
 
         }
         selectedItemsA = selectedItems
-
-
     }
 
 
-    // obtiene en tiempo real el cnt del elemneto seleccionado
     fun onEditTextChanged(editTextTag: Int, newText: String) {
         // Manejar el cambio de texto aquí
         // Puedes utilizar el editTextTag para identificar el EditText específico
@@ -398,8 +406,6 @@ class SeleccionProductoActivity : AppCompatActivity() {
             println("hola")
             cntGlobal = newText.toInt()
             updatePrecio()
-
-            // updateBono()
         }else{
             println("bye")
             cntGlobal = 0
@@ -407,11 +413,9 @@ class SeleccionProductoActivity : AppCompatActivity() {
         //
     }
 
-
-
     //lee el archivo pedidos
     private fun leerproducts() {
-        val filePath = applicationContext.filesDir.absolutePath + "/productos.csv" // Ruta al archivo CSV
+        val filePath = applicationContext.filesDir.absolutePath + "/productos_$user.csv" // Ruta al archivo CSV
 
         try {
             CSVReader(FileReader(filePath)).use { csvReader ->
@@ -447,17 +451,23 @@ class SeleccionProductoActivity : AppCompatActivity() {
                     if(product.tipo == "TERMINADO"){
                         if (product.id_cliente == idProducto && filtro == null) {
                             addProduct(arrayList, product)
+                            slogan.text = product.desc_cliente
                         } else if (product.id_cliente == idClient && filtro == null) {
                             idProducto = null
+                            addProduct(arrayList, product)
+
                             geto()
                             updateProductCounts(arrayList)
 
-                            addProduct(arrayList, product)
                             //comentario.setText(comentarioB)
+                            slogan.text = product.desc_cliente
+
 
                             contador =1
                             contadorSave = 1
                         } else if (filtro != null) {
+                           slogan.text = product.desc_cliente
+
                             println("entre al filtro $filtro")
                             if (product.desc_producto.contains(filtro!!, ignoreCase = true)) {
                                 addProduct(arrayList, product)
@@ -470,8 +480,6 @@ class SeleccionProductoActivity : AppCompatActivity() {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
-        // Inicializar RecyclerView y su adaptador
 
     }
 
@@ -503,7 +511,7 @@ class SeleccionProductoActivity : AppCompatActivity() {
                 codigo_producto = product.id_producto,
                 comentario = "",
                 precioTotal = "0",
-                bonoT = "0"
+                bonoT = "0",
 
 
             )
@@ -517,7 +525,6 @@ class SeleccionProductoActivity : AppCompatActivity() {
                     producto.cnt = productoB.cnt
                     producto.precioTotal = productoB.precioT
                     producto.bonoT = productoB.bonoT
-                    //comentario.setText(producto.comentario)
                     comentarioB = productoB.comentario
                     println("comentario $comentarioB")
 
@@ -527,7 +534,7 @@ class SeleccionProductoActivity : AppCompatActivity() {
         }
     }
     private fun geto(){
-        val rutaArchivo = File(applicationContext.filesDir, "pedidos.txt")
+        val rutaArchivo = File(applicationContext.filesDir, "pedidos_$user.txt")
         try {
             if (rutaArchivo.exists()) {
                 val lector = BufferedReader(FileReader(rutaArchivo))
@@ -538,8 +545,6 @@ class SeleccionProductoActivity : AppCompatActivity() {
                 val jsonArray = JSONArray(contenido)
 
                 // Crea una lista de pedidos
-
-
 
                 // Itera a través de los objetos JSON y crea manualmente los objetos Pedido
                 for (i in 0 until jsonArray.length()) {
@@ -554,7 +559,6 @@ class SeleccionProductoActivity : AppCompatActivity() {
                     val precio = pedido.getString("precio")
                     val precioT = pedido.getString("precioTotal")
                     val bono = pedido.getString("bonoT")
-
                     val cnt = pedido.getString("cnt")
                     val estado = "abierto"
                     val fecha = pedido.getString("fecha")
@@ -579,7 +583,7 @@ class SeleccionProductoActivity : AppCompatActivity() {
                                 comentario = comentario,
                                 idPedido = idPedido,
                                 precioT = precioT,
-                                bonoT = bono
+                                bonoT = bono,
                             )
                         )
                     }

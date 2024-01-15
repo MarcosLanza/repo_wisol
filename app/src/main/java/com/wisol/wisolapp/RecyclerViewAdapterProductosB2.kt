@@ -9,6 +9,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import java.text.NumberFormat
+import java.util.Locale
 
 class RecyclerViewAdapterProductosB2 : RecyclerView.Adapter<RecyclerViewAdapterProductosB2.ViewHolder>() {
     var productos: MutableList<ProductosModel> = ArrayList()
@@ -57,6 +59,8 @@ class RecyclerViewAdapterProductosB2 : RecyclerView.Adapter<RecyclerViewAdapterP
         val precio : TextView
         val descuento : TextView
         val precioT : TextView
+        val impuesto : TextView
+
 
         init {
             producto = view.findViewById(R.id.txtNameProducto)
@@ -66,6 +70,7 @@ class RecyclerViewAdapterProductosB2 : RecyclerView.Adapter<RecyclerViewAdapterP
             precio = view.findViewById(R.id.txtProductoPrecio)
             descuento = view.findViewById(R.id.txtProductoDescuento)
             precioT = view.findViewById(R.id.txtProductoPrecioP)
+            impuesto = view.findViewById(R.id.txtProductoImpuestoto)
 
         }
     }
@@ -87,6 +92,8 @@ class RecyclerViewAdapterProductosB2 : RecyclerView.Adapter<RecyclerViewAdapterP
         } else {
             holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.grey)) // Cambiar al color deseado
         }
+        val formato = NumberFormat.getNumberInstance(Locale.getDefault())
+
 
         val producto = filteredProductos[position]
         holder.producto.text = producto.desc_producto
@@ -94,11 +101,12 @@ class RecyclerViewAdapterProductosB2 : RecyclerView.Adapter<RecyclerViewAdapterP
         holder.id_producto.text = producto.id_producto
         holder.precio.text = producto.precio
         holder.descuento.text = producto.descuento
+        holder.impuesto.text = producto.impuesto
         val she = producto.bonoT
         println("se esrta $she")
 
         holder.bono.text = producto.bonoT
-        holder.precioT.text = producto.precioTotal
+        holder.precioT.text = formato.format(producto.precioTotal.toDouble())
 
         holder.producto.setTextColor(ContextCompat.getColor(context, android.R.color.black))
         holder.cnt.setTextColor(ContextCompat.getColor(context, android.R.color.black))
@@ -118,15 +126,16 @@ class RecyclerViewAdapterProductosB2 : RecyclerView.Adapter<RecyclerViewAdapterP
                 // Obtener la posición del elemento en lugar de la etiqueta
                 val itemPosition = holder.cnt.tag as Int
                 try {
-                    if (newText != "") {
+                    if (newText != "" && newText != "0") {
 
                         num = (newText.toDouble() / producto.minimo.toDouble())
+                        println("este es el nium $num")
                         val esEntero = num == num.toInt().toDouble()
                         if (esEntero) {
                             if (num != 0.0){
                                 val hola = producto.bono.toDouble()
                                 num = num*hola
-                                println("hi $hola")
+                                println("hi $num")
                                 holder.bono.text = String.format("%.1f", num)
                                 holder.bono.setBackgroundColor(
                                     ContextCompat.getColor(
@@ -142,13 +151,25 @@ class RecyclerViewAdapterProductosB2 : RecyclerView.Adapter<RecyclerViewAdapterP
                         else{
                             val hola = producto.bono.toDouble()
                             num = num*hola
-                            println("hi $hola")
-                            holder.bono.text = String.format("%.1f", num)
-                            holder.bono.setBackgroundColor(
-                                ContextCompat.getColor(
-                                    context,
-                                    R.color.red
-                                ))
+                            println("hi ${producto.minimo}")
+                            if (producto.minimo == "0"){
+                                holder.bono.text = "0"
+
+                                holder.bono.setBackgroundColor(
+                                    ContextCompat.getColor(
+                                        context,
+                                        R.color.red
+                                    ))
+
+                            }else{
+                                holder.bono.text = String.format("%.1f", num)
+                                holder.bono.setBackgroundColor(
+                                    ContextCompat.getColor(
+                                        context,
+                                        R.color.red
+                                    ))
+                            }
+
                         }
                         // holder.precioT.text = ((producto.precio.toDouble() - (producto.precio.toDouble()*(producto.desc_producto.toDouble()/100)))*3).toString()
 
@@ -156,7 +177,7 @@ class RecyclerViewAdapterProductosB2 : RecyclerView.Adapter<RecyclerViewAdapterP
                         val descuentoP = producto.descuento.toDouble()
                         total = productoPrecio-(productoPrecio*(descuentoP/100))
                         total = total* newText.toDouble()
-                        holder.precioT.text = String.format("%.1f", total)
+                        holder.precioT.text = formato.format(total)
                         for(pro in selectedItems){
                             if (idP == pro.id_producto){
                                 pro.precioTotal = total.toString()

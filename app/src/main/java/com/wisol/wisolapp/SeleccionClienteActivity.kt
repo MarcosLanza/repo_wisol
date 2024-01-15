@@ -1,5 +1,6 @@
 package com.wisol.wisolapp
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -23,7 +24,10 @@ class SeleccionClienteActivity : AppCompatActivity() {
     var filtro: String? = null
     var filtroCodigo: String? = null
     var idProducto: String? = null
+    var arrayList: MutableList<ClientesProductosModel> = ArrayList()
+    var user = ""
 
+    private lateinit var recyclerViewAdapter: RecyclerViewAdapterClientes
 
 
     private lateinit var editText: TextInputEditText
@@ -34,6 +38,16 @@ class SeleccionClienteActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_seleccion_cliente)
+        userUsu()
+
+        recyclerViewAdapter = RecyclerViewAdapterClientes()
+        getClients()
+        recyclerViewAdapter.RecyclerViewAdapter(arrayList.distinctBy { it.id_cliente }.toMutableList(), this)
+        println("hola primera "+arrayList)
+
+        val recycler: RecyclerView = findViewById(R.id.recyclerViewC)
+        recycler.layoutManager = LinearLayoutManager(this)
+        recycler.adapter = recyclerViewAdapter
 
         val btnCLear = findViewById<Button>(R.id.btnClear)
         btnCLear.setOnClickListener { clear() }
@@ -71,7 +85,8 @@ class SeleccionClienteActivity : AppCompatActivity() {
 
                 }
 
-                getClients()
+                updateFiltro()
+
 
 
             }
@@ -98,7 +113,8 @@ class SeleccionClienteActivity : AppCompatActivity() {
 
                 }
 
-                getClients()
+                updateFiltroB()
+
 
 
             }
@@ -110,9 +126,28 @@ class SeleccionClienteActivity : AppCompatActivity() {
 
 
 
-        init()
 
 
+
+    }
+    private fun userUsu(){
+        val sharedPreferences = getSharedPreferences("MiUsuario", Context.MODE_PRIVATE)
+        val valorRecuperado = sharedPreferences.getString("miValor", "")
+
+
+        user = valorRecuperado.toString()
+
+
+        println("valori $user")
+
+    }
+
+    fun updateFiltro(){
+        recyclerViewAdapter.updateFiltro(filtro.toString(),1)
+
+    }
+    fun updateFiltroB(){
+        recyclerViewAdapter.updateFiltro(filtroCodigo.toString(),2)
 
     }
     private fun clear(){
@@ -136,29 +171,24 @@ class SeleccionClienteActivity : AppCompatActivity() {
 
     }
 
-    private fun init(){
-        getClients()
-    }
-    fun click(ola:String?, codigo:String?, codigoCo:String?){
 
-        selected = ola
+    fun click(ola:String?, codigo: String?){
+        println("welcome $codigo")
+
+
+        filtro = ola
+        //editText.setText(ola)
+        //updateFiltro()
         idProducto = codigo
-        editText.setText(selected)
-        if (codigo != null){
-            editCodigo.setText(codigo)
 
-        }
-        filtro = selected
-        filtroCodigo = selected
-        getClients()
+
 
     }
 
 
     private fun getClients() {
-        val filePath = applicationContext.filesDir.absolutePath + "/productos.csv" // Ruta al archivo CSV
+        val filePath = applicationContext.filesDir.absolutePath + "/productos_$user.csv" // Ruta al archivo CSV
 
-        val arrayList: MutableList<ClientesProductosModel> = ArrayList()
 
         try {
             val csvReader = CSVReader(FileReader(filePath))
@@ -192,21 +222,17 @@ class SeleccionClienteActivity : AppCompatActivity() {
                     record[16]
                 )
 
-                if (filterProduct(product)) {
-                    addCliente(arrayList, product)
-                }
+
+                addCliente(arrayList, product)
+
+
+
             }
 
             csvReader.close()
 
             // Inicializar RecyclerView y su adaptador fuera del bucle while
-            val recycler: RecyclerView = findViewById(R.id.recyclerViewC)
-            val adapter: RecyclerViewAdapterClientes = RecyclerViewAdapterClientes()
-            adapter.RecyclerViewAdapterP(arrayList.distinctBy { it.id_cliente }.toMutableList(), this)
 
-            recycler.hasFixedSize()
-            recycler.adapter = adapter
-            recycler.layoutManager = LinearLayoutManager(this)
         } catch (e: FileNotFoundException) {
             // Manejo de excepción si el archivo no se encuentra
             e.printStackTrace()
@@ -219,31 +245,7 @@ class SeleccionClienteActivity : AppCompatActivity() {
     }
 
 
-    private fun filterProduct(product: ProductsModel): Boolean {
-        return when {
-            selected == null && filtro == null && filtroCodigo == null -> {
-                filtro = null
-                filtroCodigo = null
-                true // No hay filtros
-            }
-            filtro != null && product.desc_cliente.contains(filtro.toString(), ignoreCase = true) -> {
-                filtroCodigo = null
-                true
-            }
-            selected == product.desc_cliente -> {
-                true
-            }
-            filtroCodigo != null && product.id_cliente.contains(filtroCodigo.toString(), ignoreCase = true) -> {
-                filtro = null
-                selected = null
 
-                true
-            }
-            else -> {
-                false // No hay coincidencia
-            }
-        }
-    }
 
     private fun addCliente(arrayList: MutableList<ClientesProductosModel>, product: ProductsModel) {
         arrayList.add(ClientesProductosModel(
