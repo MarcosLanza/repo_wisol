@@ -19,8 +19,7 @@ import java.io.IOException
 class SeleccionClienteActivity : AppCompatActivity() {
 
 
-    var selected:String? = null
-    var selectedCo:String? = null
+
     var filtro: String? = null
     var filtroCodigo: String? = null
     var idProducto: String? = null

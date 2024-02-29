@@ -42,7 +42,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="50dp"
                 android:layout_marginBottom="8dp"
-                android:text="#Articulos"
+                android:text="No hay Articulos"
                 android:textSize="25dp"
                 android:textStyle="bold" />
 

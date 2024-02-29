@@ -21,8 +21,6 @@ class RecyclerViewAdapterProductos : RecyclerView.Adapter<RecyclerViewAdapterPro
 
     lateinit var context: Context
     var idP = ""
-    var conta = 0
-    var contaB = 0
     var rito = 0
     var num = 0.0
     var total = 0.0

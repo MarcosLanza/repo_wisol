@@ -53,6 +53,9 @@ class InicioActivity : AppCompatActivity() {
     val arrayListE: MutableList<PedidosModel> = ArrayList()
     private lateinit var btnCirculo: FloatingActionButton
     private lateinit var btnPedidos: Button
+    private lateinit var btnNewClient: Button
+    private lateinit var btnSincronizar: Button
+    private lateinit var btnSubirPediddo: Button
 
 
 
@@ -67,10 +70,10 @@ class InicioActivity : AppCompatActivity() {
 
         btnPedidos = findViewById(R.id.btnPedidos)
         btnPedidos.setOnClickListener { navigateToIncio() }
-        val btnNewClient = findViewById<Button>(R.id.btnNewClient)
-        val btnSincronizar = findViewById<Button>(R.id.btnSincronizar)
+        btnNewClient = findViewById(R.id.btnNewClient)
+        btnSincronizar = findViewById(R.id.btnSincronizar)
         val btnout = findViewById<Button>(R.id.btnOut)
-        val btnSubirPediddo = findViewById<Button>(R.id.btnSubirPedido)
+        btnSubirPediddo = findViewById(R.id.btnSubirPedido)
         btnCirculo = findViewById(R.id.flsincronizar)
 
         btnSubirPediddo.setOnClickListener { subirDrivePedido() }
@@ -82,9 +85,35 @@ class InicioActivity : AppCompatActivity() {
         leercsvUser()
         secion()
         changeCOlorBtn()
+        inicioRol()
+
+        botonoBloqueados()
 
 
 
+
+    }
+    private fun botonoBloqueados(){
+        val colorRojo = ColorStateList.valueOf(Color.RED)
+
+        if (rol == "1"){
+            btnPedidos.backgroundTintList = colorRojo
+            btnPedidos.isEnabled = false
+
+            btnSincronizar.backgroundTintList = colorRojo
+            btnSincronizar.isEnabled = false
+
+            btnNewClient.backgroundTintList = colorRojo
+            btnNewClient.isEnabled = false
+
+            btnSubirPediddo.backgroundTintList = colorRojo
+            btnSubirPediddo.isEnabled = false
+
+        }
+        else if (rol == "2"){
+            btnNewClient.backgroundTintList = colorRojo
+            btnNewClient.isEnabled = false
+        }
     }
     private fun cerrarSeccion(){
         val sharedPreferences = getSharedPreferences("MiPref", Context.MODE_PRIVATE)
@@ -101,6 +130,14 @@ class InicioActivity : AppCompatActivity() {
         val editor = sharedPreferences.edit()
         editor.putString("miValor", "$contador")
         editor.apply()
+
+
+    }
+    private fun inicioRol(){
+        val sharedPreferences = getSharedPreferences("RolUsuario", Context.MODE_PRIVATE)
+        val valorRecuperado = sharedPreferences.getString("miValor", "")
+        rol = valorRecuperado
+        println("valorRol $valorRecuperado")
 
 
     }
@@ -370,6 +407,8 @@ class InicioActivity : AppCompatActivity() {
                     println("XD   " + responseBody)
 
                     try {
+                        val colorRojo = ColorStateList.valueOf(Color.RED)
+
                         // Convierte la respuesta JSON en un objeto JSONObject
                         val responseObject = JSONObject(responseBody)
 
@@ -443,7 +482,38 @@ class InicioActivity : AppCompatActivity() {
 
                                         productos.add(productModel)
                                     }
-                                }else if(rol == "1"){
+
+                                }
+
+                                else if (rol == "3"){
+
+                                    println("usuario final $usu")
+                                    if (vendedor == usu) {
+                                        val productModel = ProductsModel(
+                                            vendedor,
+                                            idCliente,
+                                            descCliente,
+                                            idProducto,
+                                            descProducto,
+                                            marca,
+                                            tipo,
+                                            precio,
+                                            descuento,
+                                            tipoImpuesto,
+                                            tipoTarifa,
+                                            impuesto,
+                                            ventaTrim,
+                                            ventaAnt,
+                                            ventaAct,
+                                            bono,
+                                            minimo
+                                        )
+
+                                        productos.add(productModel)
+                                    }
+                                }else if(rol == "4"){
+                                    println("rol es 4")
+
                                     println("entre supervidor")
                                     val productModel = ProductsModel(
                                         vendedor,
@@ -494,6 +564,7 @@ class InicioActivity : AppCompatActivity() {
             }
         })
     }
+
     private fun createProductCsv(productos: MutableList<ProductsModel>) {
         val fileName = "productos_$user.csv"
         val directory = applicationContext.filesDir

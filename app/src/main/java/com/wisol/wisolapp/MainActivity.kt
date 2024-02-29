@@ -32,8 +32,12 @@ class MainActivity : AppCompatActivity() {
     var passwordBuscada = ""
     var passwordCodificado = ""
     var idUsuario : String? = ""
-    var rol : String? = ""
+    var rol : String? = null
+
+
+
     val usersList = mutableListOf<UsersModel>()
+
 
 
 
@@ -74,13 +78,16 @@ class MainActivity : AppCompatActivity() {
             if (use.usuario == nombreBuscado && use.password == passwordCodificado){
                 println("password es "+use.password)
                 idUsuario = use.usuario
-                rol = use.role
-                println("Hola muchachos $use.usuario")
-                inicioSeccion()
-                navigateToIncio()
+                if (use.funcionId == "APP-01"){
+                    rol = "1"
+                    println("esta es la FUNCION ID ${use.funcionId}")
+                    inicioSeccion()
+                    navigateToIncio()
+                }
+
             }
-            println("Bye Muchachos")
-            println("password es "+use.password+" "+use.usuario)
+            //println("Bye Muchachos")
+            //println("password es "+use.password+" "+use.usuario)
         }
     }
 
@@ -135,7 +142,7 @@ class MainActivity : AppCompatActivity() {
                     record[10]
                 )
                 usersList.add(user)
-                println("Hola "+usersList)
+               // println("Hola "+usersList)
 
             }
             csvReader.close()
@@ -170,8 +177,9 @@ class MainActivity : AppCompatActivity() {
         val mesFormateado = String.format("%02d", mes)
 
         val fechaj = "_$ano$mesFormateado$diaFormateado.csv"
-        println("fecha $fechaj")
+        println("Fecha $fechaj")
         val url = "https://script.google.com/macros/s/AKfycbykgrf2MAkYOrlcgyupiA0laVPYM845yx0Tdj-qfFXcHeo7qwFNs_annyEzDwgY9UhF/exec?function=doGet&nombreArchivo=matrices_seguridad_usuarios$fechaj"
+
         val client = OkHttpClient()
         val request = Request.Builder()
             .url(url)
@@ -183,7 +191,7 @@ class MainActivity : AppCompatActivity() {
                     val responseBody = response.body?.string()
                     // Procesar la respuesta JSON aquí
                     // responseBody contiene la respuesta JSON de la función doGet
-                    println("XD   "+responseBody)
+                    println("XD   " + responseBody)
 
                     try {
                         // Convierte la respuesta JSON en un objeto JSONObject
@@ -193,7 +201,6 @@ class MainActivity : AppCompatActivity() {
                         if (responseObject.getString("resultado") == "Archivo encontrado") {
                             // Obtén el array "datosCSV" del JSON
                             val datosCSVArray = responseObject.getJSONArray("datosCSV")
-
 
                             // Crea una lista mutable para almacenar los datos CSV formateados
                             val datosCSVFormattedList: MutableList<List<String>> = mutableListOf()
@@ -213,42 +220,59 @@ class MainActivity : AppCompatActivity() {
                                 if (csvRowList.isNotEmpty()) {
                                     datosCSVFormattedList.add(csvRowList)
                                 }
-                                for (fila in datosCSVFormattedList) {
-                                    // Accede a cada valor por su índice
-                                    val usuarioId = fila[0]
-                                    val usuario = fila[1]
-                                    val password = fila[2]
-                                    val nombre = fila[3]
-                                    val correo = fila[4]
-                                    val funcionId = fila[5]
-                                    val aplicacion = fila[6]
-                                    val funcion = fila[7]
-                                    val roleId = fila[8]
-                                    val role = fila[9]
-                                    val permiso = fila[10]
-                                    println("esta es la password fila " +password+" "+passwordCodificado+" NAME"+nombreBuscado)
-                                    if (usuario == nombreBuscado && password == passwordCodificado){
-                                        println("password es "+password)
-                                        idUsuario = usuario
-                                        rol = roleId
-                                        println("Hola muchachos $usuario")
-                                        inicioSeccion()
-                                        roto = 1
-                                        navigateToIncio()
+                            }
 
+                            // Itera sobre los datos formateados
+                            for (fila in datosCSVFormattedList) {
+                                val usuario = fila[1]
+                                val password = fila[2]
+                                val nombre = fila[3]
+
+                                println("Esta es la contraseña de la fila $password $passwordCodificado NOMBRE $nombreBuscado")
+
+                                if (usuario == nombreBuscado && password == passwordCodificado) {
+                                    roto = 2
+
+                                    // Obtén el rol basado en la aplicación (funcionId)
+                                    val funcionId = fila[5]
+                                    println("Usuario: $usuario, FuncionId: $funcionId") // Agrega esta línea para depurar
+
+                                    // Obtén el valor numérico del rol actual
+                                    val rolActual = rol?.toIntOrNull()
+
+                                    // Obtén el valor numérico del nuevo rol
+                                    val nuevoRol = when (funcionId) {
+                                        "APP-04" -> 4
+                                        "APP-03" -> 3
+                                        "APP-02" -> 2
+                                        "APP-01" -> 1
+                                        else -> {
+                                            println("Rol no reconocido para FuncionId: $funcionId") // Agrega esta línea para depurar
+                                            null
+                                        }
                                     }
 
-                                    println("Bye Muchachos")
-                                    println("password es "+password+" "+nombre)
-                                    //navigateToIncio()
+                                    // Actualiza el rol solo si el nuevo rol es mayor al rol actual
+                                    if (nuevoRol != null && (rolActual == null || nuevoRol > rolActual)) {
+                                        rol = nuevoRol.toString()
+                                    }
 
+                                    val usersModel = UsersModel(
+                                        fila[0], usuario, password, nombre, fila[4], funcionId, fila[6], fila[7], fila[8], fila[9], fila[10]
+                                    )
+                                    usersList.add(usersModel)
+                                    println("La lista de usuarios: $usersList")
+
+                                    idUsuario = usuario
+
+                                    rolUsuario()
+                                    inicioSeccion()
+                                    navigateToIncio()
                                 }
+                            }
 
-
-
-                                }
-
-                            // Ahora tienes los datos CSV formateados en datosCSVFormattedList
+                            println("Bye Muchachos")
+                            println("Este es el rol $rol")
                         } else {
                             // Maneja el caso en el que el resultado no sea "Archivo encontrado"
                         }
@@ -257,9 +281,8 @@ class MainActivity : AppCompatActivity() {
                         e.printStackTrace()
                     }
 
-                    if (roto == 0){
+                    if (roto == 0) {
                         mostrarMensajeInvalido()
-
                     }
                 } else {
                     // Manejar errores de respuesta
@@ -271,6 +294,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
+
 
     fun mostrarMensajeInvalido() {
         val rootView = findViewById<View>(android.R.id.content)
@@ -290,6 +314,13 @@ class MainActivity : AppCompatActivity() {
         val sharedPreferences = getSharedPreferences("MiPref", Context.MODE_PRIVATE)
         val valorRecuperado = sharedPreferences.getString("miValor", "")
         println("valor $valorRecuperado")
+    }
+    private fun rolUsuario(){
+        val sharedPreferences = getSharedPreferences("RolUsuario", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("miValor", "$rol")
+        println("hola inicio $rol")
+        editor.apply()
     }
 
 

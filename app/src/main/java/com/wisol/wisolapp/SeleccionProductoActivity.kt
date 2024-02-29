@@ -39,6 +39,7 @@ class SeleccionProductoActivity : AppCompatActivity() {
     var changeA: String? = ""
     var comentarioB: String? = ""
     var user = ""
+    var bako = 0
     var idClient = ""
     var selectedItemsA: MutableList<ProductosModel> = ArrayList() // Lista para rastrear elementos seleccionados
     var selectedItemsB: MutableList<ProductosModel> = ArrayList() // Lista para rastrear elementos seleccionados
@@ -62,7 +63,6 @@ class SeleccionProductoActivity : AppCompatActivity() {
     var cntGlobal = 0
     var minimo = 0
     var preze:Double = 0.0
-    var total:Double = 0.0
 
     val arrayListE: MutableList<PedidosModel> = ArrayList()
 
@@ -197,9 +197,13 @@ class SeleccionProductoActivity : AppCompatActivity() {
 
     }
     private fun backo(){
-        val intent = Intent(this, SeleccionClienteActivity::class.java)
-        startActivity(intent)
-
+        if (bako == 1){
+            val intent = Intent(this, PedidosActivity::class.java)
+            startActivity(intent)
+        }else {
+            val intent = Intent(this, SeleccionClienteActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun changeViewPro(){
@@ -352,14 +356,7 @@ class SeleccionProductoActivity : AppCompatActivity() {
         }
 
     }
-    private fun updateBono(){
-        println("este es el bonus " +cntGlobal+" "+minimo)
-        try {
-        } catch (e: ArithmeticException) {
-            // Manejo de la excepción (división por cero)
-            // Puedes mostrar un mensaje de error o tomar alguna otra acción apropiada
-        }
-    }
+
     private fun updatePrecio(){
         val sumaTotal = selectedItemsC.sumByDouble { it.precioTotal.toDouble() }
         println("la suma total es: $sumaTotal")
@@ -453,6 +450,7 @@ class SeleccionProductoActivity : AppCompatActivity() {
                             addProduct(arrayList, product)
                             slogan.text = product.desc_cliente
                         } else if (product.id_cliente == idClient && filtro == null) {
+                            bako = 1
                             idProducto = null
                             addProduct(arrayList, product)
 
@@ -470,9 +468,11 @@ class SeleccionProductoActivity : AppCompatActivity() {
 
                             println("entre al filtro $filtro")
                             if (product.desc_producto.contains(filtro!!, ignoreCase = true)) {
+                                slogan.text = product.desc_cliente
                                 addProduct(arrayList, product)
                             }
                         }
+
                     }
 
                 }
