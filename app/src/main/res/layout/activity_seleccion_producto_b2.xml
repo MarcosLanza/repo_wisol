@@ -31,7 +31,7 @@
                  android:layout_marginStart="8dp"
                  android:layout_marginTop="8dp"
                  android:layout_marginBottom="8dp"
-                 android:src="@drawable/ic_logo1" />
+                 android:src="@drawable/ic_wisol_logo" />
 
              <TextView
                  android:layout_width="205dp"
@@ -41,6 +41,7 @@
                  android:layout_marginEnd="50dp"
                  android:layout_marginBottom="8dp"
                  android:text="#Devoluciones"
+                 style="@style/ButtonTitle"
                  android:textSize="30dp"
                  android:textStyle="bold" />
 
@@ -59,7 +60,7 @@
                  android:id="@+id/etFilterCodigoProducto"
                  android:layout_width="match_parent"
                  android:layout_height="wrap_content"
-                 android:hint="Nombre Producto">
+                 android:hint="Código/Producto">
 
                  <com.google.android.material.textfield.TextInputEditText
                      android:id="@+id/inputFilterCodigoProducto"
@@ -95,7 +96,7 @@
 
          <LinearLayout
              android:layout_width="match_parent"
-             android:layout_height="485dp"
+             android:layout_height="635dp"
              android:orientation="vertical">
              <TableLayout
                  android:layout_width="match_parent"
@@ -112,11 +113,12 @@
                      android:background="@color/blue">
                      <TextView
                          android:layout_width="0dp"
-                         android:layout_height="wrap_content"
-                         android:layout_weight="2"
-                         android:textSize="20dp"
+                         android:layout_height="50dp"
+                         android:layout_weight="2.5"
+                         android:textSize="18dp"
+                         style="@style/Encabezado"
 
-                         android:text="Codigo"
+                         android:text="Código"
                          android:textColor="@color/white"
                          android:gravity="center"/>
                      <View
@@ -127,9 +129,11 @@
                          android:layout_width="0dp"
                          android:layout_height="50dp"
                          android:text="Producto"
+                         style="@style/Encabezado"
+
                          android:textColor="@color/white"
-                         android:layout_weight="3"
-                         android:textSize="20dp"
+                         android:layout_weight="7"
+                         android:textSize="18dp"
                          android:gravity="center"/>
 
                      <View
@@ -139,9 +143,10 @@
 
                      <TextView
                          android:layout_width="0dp"
-                         android:layout_height="wrap_content"
+                         android:layout_height="50dp"
                          android:layout_weight="2"
-                         android:textSize="20dp"
+                         android:textSize="18dp"
+                         style="@style/Encabezado"
 
                          android:text="CNT"
                          android:textColor="@color/white"
@@ -153,9 +158,10 @@
 
                      <TextView
                          android:layout_width="0dp"
-                         android:layout_height="wrap_content"
+                         android:layout_height="50dp"
                          android:layout_weight="2"
-                         android:textSize="20dp"
+                         android:textSize="18dp"
+                         style="@style/Encabezado"
 
                          android:text="Bono"
                          android:textColor="@color/white"
@@ -169,11 +175,12 @@
 
                      <TextView
                          android:layout_width="0dp"
-                         android:layout_height="wrap_content"
+                         android:layout_height="50dp"
                          android:layout_weight="2"
-                         android:textSize="20dp"
+                         android:textSize="18dp"
+                         style="@style/Encabezado"
 
-                         android:text="Precio U"
+                         android:text="Precio"
                          android:textColor="@color/white"
                          android:gravity="center"/>
                      <View
@@ -183,11 +190,12 @@
 
                      <TextView
                          android:layout_width="0dp"
-                         android:layout_height="wrap_content"
+                         android:layout_height="50dp"
                          android:layout_weight="2"
-                         android:textSize="19dp"
+                         android:textSize="18dp"
+                         style="@style/Encabezado"
 
-                         android:text="Descuento"
+                         android:text="Desc"
                          android:textColor="@color/white"
                          android:gravity="center"/>
                      <View
@@ -196,11 +204,12 @@
                          android:background="@android:color/white" />
                      <TextView
                          android:layout_width="0dp"
-                         android:layout_height="wrap_content"
+                         android:layout_height="50dp"
                          android:layout_weight="2"
-                         android:textSize="19dp"
+                         android:textSize="18dp"
+                         style="@style/Encabezado"
 
-                         android:text="Impuesto"
+                         android:text="Imp"
                          android:textColor="@color/white"
                          android:gravity="center"/>
                      <View
@@ -212,13 +221,46 @@
 
                      <TextView
                          android:layout_width="0dp"
-                         android:layout_height="wrap_content"
+                         android:layout_height="50dp"
                          android:layout_weight="2"
-                         android:textSize="20dp"
+                         android:textSize="18dp"
+                         style="@style/Encabezado"
 
-                         android:text="Precio t"
+                         android:text="Total"
                          android:textColor="@color/white"
                          android:gravity="center"/>
+                     <View
+                         android:layout_width="2dp"
+                         android:layout_height="match_parent"
+                         android:background="@android:color/white" />
+
+                     <TextView
+                         android:layout_width="0dp"
+                         android:layout_height="50dp"
+                         android:layout_weight="2"
+                         android:textSize="15dp"
+                         style="@style/Encabezado"
+
+                         android:text="Vender"
+                         android:textColor="@color/white"
+                         android:gravity="center"/>
+                     <View
+                         android:layout_width="2dp"
+                         android:layout_height="match_parent"
+                         android:background="@android:color/white" />
+
+                     <TextView
+                         android:layout_width="0dp"
+                         android:layout_height="50dp"
+                         android:layout_weight="2"
+                         android:textSize="15dp"
+                         style="@style/Encabezado"
+
+                         android:text="Ordenar"
+                         android:textColor="@color/white"
+                         android:gravity="center"/>
+
+
                  </TableRow>
                  <View
                      android:layout_width="match_parent"
@@ -264,6 +306,8 @@
                      android:text="Promedio Trim"
                      android:textSize="20dp"
                      android:textColor="@color/white"
+                     style="@style/Encabezado"
+
                      android:gravity="center" />
 
                  <View
@@ -276,6 +320,7 @@
                      android:layout_height="wrap_content"
                      android:text="Mes Anterior"
                      android:textSize="20dp"
+                     style="@style/Encabezado"
 
                      android:textColor="@color/white"
                      android:gravity="center" />
@@ -290,6 +335,7 @@
                      android:layout_height="wrap_content"
                      android:text="Mes Actual"
                      android:textSize="20dp"
+                     style="@style/Encabezado"
 
                      android:textColor="@color/white"
                      android:gravity="center" />
@@ -374,6 +420,8 @@
                      android:layout_height="wrap_content"
                      android:text="Min"
                      android:textSize="20dp"
+                     style="@style/Encabezado"
+
                      android:textColor="@color/white"
                      android:gravity="center" />
 
@@ -387,6 +435,7 @@
                      android:layout_height="wrap_content"
                      android:text="Cantidad"
                      android:textSize="20dp"
+                     style="@style/Encabezado"
 
                      android:textColor="@color/white"
                      android:gravity="center" />
@@ -399,8 +448,9 @@
                  <TextView
                      android:layout_width="wrap_content"
                      android:layout_height="wrap_content"
-                     android:text="Precio"
+                     android:text="Total IVA"
                      android:textSize="20dp"
+                     style="@style/Encabezado"
 
                      android:textColor="@color/white"
                      android:gravity="center" />
@@ -472,7 +522,7 @@
              android:layout_gravity="center"
              android:layout_margin="10dp"
              android:layout_marginVertical="16dp"
-             android:backgroundTint="@color/blue"
+             style="@style/ButtonTitle2"
              android:text="Guardar"
              app:cornerRadius='10dp'
 

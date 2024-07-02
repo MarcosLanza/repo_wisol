@@ -67,13 +67,26 @@
                 android:layout_width="400dp"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="16dp"
-                android:backgroundTint="@color/blue"
                 android:text="Ingresar"
+                style="@style/ButtonTitle2"
+
                 app:cornerRadius='10dp'
                 app:iconTint="@android:color/white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/etPassword" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/swDarkMode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+
+                android:text="Modo Oscuro  "
+                >
+
+            </com.google.android.material.switchmaterial.SwitchMaterial>
+
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 

@@ -60,6 +60,7 @@ class RecyclerViewAdapterProductosB2 : RecyclerView.Adapter<RecyclerViewAdapterP
         val descuento : TextView
         val precioT : TextView
         val impuesto : TextView
+        val uc : TextView
 
 
         init {
@@ -71,6 +72,7 @@ class RecyclerViewAdapterProductosB2 : RecyclerView.Adapter<RecyclerViewAdapterP
             descuento = view.findViewById(R.id.txtProductoDescuento)
             precioT = view.findViewById(R.id.txtProductoPrecioP)
             impuesto = view.findViewById(R.id.txtProductoImpuestoto)
+            uc = view.findViewById(R.id.txtUC)
 
         }
     }
@@ -102,6 +104,7 @@ class RecyclerViewAdapterProductosB2 : RecyclerView.Adapter<RecyclerViewAdapterP
         holder.precio.text = producto.precio
         holder.descuento.text = producto.descuento
         holder.impuesto.text = producto.impuesto
+        holder.uc.text = producto.uc
         val she = producto.bonoT
         println("se esrta $she")
 

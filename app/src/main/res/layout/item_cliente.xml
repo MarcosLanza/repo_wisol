@@ -26,7 +26,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="ID"
-                android:textColor="@android:color/white"
+                style="@style/ButtonTitle"
+
                 android:padding="8dp"
                 android:textStyle="bold"
                 android:gravity="center"/>
@@ -38,7 +39,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Cliente"
-                android:textColor="@android:color/white"
+                style="@style/ButtonTitle"
+
                 android:padding="8dp"
                 android:textStyle="bold"
                 android:gravity="center"/>
@@ -50,7 +52,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Estado"
-                android:textColor="@android:color/white"
+                style="@style/ButtonTitle"
+
                 android:padding="8dp"
                 android:textStyle="bold"
                 android:gravity="center"/>

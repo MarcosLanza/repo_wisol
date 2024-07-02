@@ -3,11 +3,16 @@ package com.wisol.wisolapp
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.Gravity
+import android.view.View
 import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -15,6 +20,8 @@ import com.opencsv.CSVReader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaType
@@ -56,6 +63,8 @@ class InicioActivity : AppCompatActivity() {
     private lateinit var btnNewClient: Button
     private lateinit var btnSincronizar: Button
     private lateinit var btnSubirPediddo: Button
+    private lateinit var progressBar: ProgressBar
+
 
 
 
@@ -67,6 +76,10 @@ class InicioActivity : AppCompatActivity() {
         rol = intent.extras?.getString("ROLE").orEmpty()
 
         userUsu()
+        val btnCerrar = findViewById<Button>(R.id.btncerrar)
+        btnCerrar.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent) }
 
         btnPedidos = findViewById(R.id.btnPedidos)
         btnPedidos.setOnClickListener { navigateToIncio() }
@@ -75,14 +88,14 @@ class InicioActivity : AppCompatActivity() {
         val btnout = findViewById<Button>(R.id.btnOut)
         btnSubirPediddo = findViewById(R.id.btnSubirPedido)
         btnCirculo = findViewById(R.id.flsincronizar)
+        progressBar = findViewById(R.id.progressBar)
 
         btnSubirPediddo.setOnClickListener { subirDrivePedido() }
         btnout.setOnClickListener { cerrarSeccion() }
-        btnSincronizar.setOnClickListener { sincronizar() }
+        btnSincronizar.setOnClickListener { loading()}
 
         btnNewClient.setOnClickListener { navigateToNewClient() }
         geto()
-        leercsvUser()
         secion()
         changeCOlorBtn()
         inicioRol()
@@ -91,6 +104,15 @@ class InicioActivity : AppCompatActivity() {
 
 
 
+
+    }
+    private fun loading (){
+        progressBar.visibility = View.VISIBLE
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            sincronizar()
+            progressBar.visibility = View.GONE // Ocultar el ProgressBar cuando termine sincronizar
+        }, 100) // 100 milisegundos de retraso
 
     }
     private fun botonoBloqueados(){
@@ -167,27 +189,82 @@ class InicioActivity : AppCompatActivity() {
         usuarioGitT = "_$ano$mesFormateado$diaFormateado.csv"
 
         user = valorRecuperado.toString()
+        user = user.trim()
 
 
         println("valori $user")
 
     }
 
-
-    private fun changeCOlorBtn(){
-        val colorRojo = ColorStateList.valueOf(Color.RED)
-        val colorVerde = ColorStateList.valueOf(Color.GREEN)
-        if (contador == 0){
-            btnPedidos.backgroundTintList = colorRojo
+    private fun darkOn():Boolean{
+        val isDarkModeEnabled = when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_YES -> true
+            else -> false
         }
 
+        if (isDarkModeEnabled) {
+            return true
+            // El modo oscuro está activado
+            // Puedes realizar acciones específicas para el modo oscuro aquí
+        } else {
+            return false
+            // El modo oscuro no está activado
+            // Puedes realizar acciones específicas para el modo claro aquí
+        }
+    }
 
-        for (lista in arrayListE){
-            if (lista.estado == "abierto"){
-                btnCirculo.backgroundTintList = colorRojo
+    private fun changeCOlorBtn(){
+        val dark = darkOn()
+        if (dark == true){
+            val colorTurquesa = ColorStateList.valueOf(Color.parseColor("#009688"))
+            val colorRojo = ColorStateList.valueOf(Color.parseColor("#F0493D"))
+            val colorVerde = ColorStateList.valueOf(Color.parseColor("#4CAF50"))
 
-            }else if(lista.estado == "cerrado"){
-                btnCirculo.backgroundTintList = colorVerde
+
+            btnCirculo.backgroundTintList = colorTurquesa
+
+            if (contador == 0){
+                btnPedidos.backgroundTintList = colorRojo
+                println("rojo")
+            }
+
+
+            for (lista in arrayListE){
+                if (lista.estado == "abierto"){
+                    btnCirculo.backgroundTintList = colorRojo
+                    println("rojo")
+
+
+                }else if(lista.estado == "cerrado"){
+                    btnCirculo.backgroundTintList = colorVerde
+                    println("verde")
+
+                }
+            }
+
+        }else{
+            println("vamos a cambiar el color")
+            val colorRojo = ColorStateList.valueOf(Color.RED)
+            val colorVerde = ColorStateList.valueOf(Color.GREEN)
+            val blue = ColorStateList.valueOf(Color.parseColor("#03A9F4"))
+            btnCirculo.backgroundTintList = blue
+            if (contador == 0){
+            btnPedidos.backgroundTintList = colorRojo
+            println("rojo")
+            }
+
+
+            for (lista in arrayListE){
+                if (lista.estado == "abierto"){
+                    btnCirculo.backgroundTintList = colorRojo
+                    println("rojo")
+
+
+                }else if(lista.estado == "cerrado"){
+                    btnCirculo.backgroundTintList = colorVerde
+                    println("verde")
+
+                }
             }
         }
     }
@@ -209,8 +286,9 @@ class InicioActivity : AppCompatActivity() {
     }
 
     private fun sincronizar(){
-        sincronizarUsers()
         sincronizarProducts()
+
+
         contador = 2
 
 
@@ -269,8 +347,8 @@ class InicioActivity : AppCompatActivity() {
                                 val usuarioId = fila[0]
                                 val usuario = fila[1]
                                 val password = fila[2]
-                                val correo = fila[4]
                                 val nombre = fila[3]
+                                val correo = fila[4]
                                 val funcionId = fila[5]
                                 val aplicacion = fila[6]
                                 val funcion = fila[7]
@@ -293,11 +371,14 @@ class InicioActivity : AppCompatActivity() {
                                 )
 
                                 usuarios.add(userModel)
+
                             }
 
                             // De aquí en adelante, después de procesar todos los datos, crea el archivo CSV
                             createCsvUsers(usuarios)
                             println("Se pudo")
+                            inicioSeccion()
+                            startActivity(intent)
 
                         } else {
                             // Maneja el caso en el que el resultado no sea "Archivo encontrado"
@@ -329,7 +410,7 @@ class InicioActivity : AppCompatActivity() {
 
             // Escribir datos de usuarios
             for (user in usuarios) {
-                csvWriter.append("${user.id},${user.usuario},${user.password},${user.correo},${user.funcionId},${user.aplicacion},${user.funcion},${user.rolId},${user.permiso}\n")
+                csvWriter.append("${user.id},${user.usuario},${user.password},${user.nombre},${user.correo},${user.funcionId},${user.aplicacion},${user.funcion},${user.rolId},${user.role},${user.permiso}\n")
             }
 
             csvWriter.flush()
@@ -342,13 +423,19 @@ class InicioActivity : AppCompatActivity() {
         }
     }
 
-    private fun leercsvUser(){
+    private fun leercsvUser() {
         val filePath = applicationContext.filesDir.absolutePath + "/usuario_$user.csv" // Ruta al archivo CSV
+        val file = File(filePath)
+
+        if (!file.exists()) {
+            println("El archivo no existe: $filePath")
+            return
+        }
 
         val usersList = mutableListOf<UsersModel>()
 
         try {
-            val csvReader = CSVReader(FileReader(filePath))
+            val csvReader = CSVReader(FileReader(file))
 
             // Leer la primera línea (encabezados) y descartarla
             csvReader.readNext()
@@ -359,213 +446,143 @@ class InicioActivity : AppCompatActivity() {
                 if (record == null) {
                     break
                 }
-                val user = UsersModel(
-                    record[0],
-                    record[1],
-                    record[2],
-                    record[3],
-                    record[4],
-                    record[5],
-                    record[6],
-                    record[7],
-                    record[8],
-                    record[9],
-                    record[10]
-                )
-                usersList.add(user)
-
-            }
-            csvReader.close()
-            for (use in usersList){
-                println("wewona "+use.correo)
-            }
-
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-
-    }
-
-    private fun sincronizarProducts(){
-        val productos: MutableList<ProductsModel> = mutableListOf()
-
-        val url =
-            "https://script.google.com/macros/s/AKfycbykgrf2MAkYOrlcgyupiA0laVPYM845yx0Tdj-qfFXcHeo7qwFNs_annyEzDwgY9UhF/exec?function=doGet&nombreArchivo=matrices_productos_precios$usuarioGitT"
-        val client = OkHttpClient()
-        val request = Request.Builder()
-            .url(url)
-            .build()
-
-        client.newCall(request).enqueue(object : Callback {
-            override fun onResponse(call: Call, response: Response) {
-                if (response.isSuccessful) {
-                    val responseBody = response.body?.string()
-                    // Procesar la respuesta JSON aquí
-                    // responseBody contiene la respuesta JSON de la función doGet
-                    println("XD   " + responseBody)
-
-                    try {
-                        val colorRojo = ColorStateList.valueOf(Color.RED)
-
-                        // Convierte la respuesta JSON en un objeto JSONObject
-                        val responseObject = JSONObject(responseBody)
-
-                        // Verifica si el resultado es "Archivo encontrado"
-                        if (responseObject.getString("resultado") == "Archivo encontrado") {
-                            // Obtén el array "datosCSV" del JSON
-                            val datosCSVArray = responseObject.getJSONArray("datosCSV")
-
-                            // Crea una lista mutable para almacenar los datos CSV formateados
-                            val datosCSVFormattedList: MutableList<List<String>> = mutableListOf()
-
-                            // Itera a través de los elementos del array "datosCSV"
-                            for (i in 0 until datosCSVArray.length()) {
-                                val csvRowArray = datosCSVArray.getJSONArray(i)
-                                val csvRowList: MutableList<String> = mutableListOf()
-
-                                // Itera a través de los elementos de cada fila CSV
-                                for (j in 0 until csvRowArray.length()) {
-                                    val csvCellValue = csvRowArray.getString(j).trim() // Elimina espacios en blanco
-                                    csvRowList.add(csvCellValue)
-                                }
-
-                                // Agrega la fila a la lista solo si no está vacía
-                                if (csvRowList.isNotEmpty()) {
-                                    datosCSVFormattedList.add(csvRowList)
-                                }
-                            }
-
-                            for (fila in datosCSVFormattedList) {
-                                // Accede a cada valor por su índice
-                                val vendedor = fila[0]
-                                val idCliente = fila[1]
-                                val descCliente = fila[2]
-                                val idProducto = fila[3]
-                                val descProducto = fila[4]
-                                val marca = fila[5]
-                                val tipo = fila[6]
-                                val precio = fila[7]
-                                val descuento = fila[8]
-                                val tipoImpuesto = fila[9]
-                                val tipoTarifa = fila[10]
-                                val impuesto = fila[11]
-                                val ventaTrim = fila[12]
-                                val ventaAnt = fila[13]
-                                val ventaAct = fila[14]
-                                val bono = fila[15]
-                                val minimo = fila[16]
-                                println("usu = $vendedor + $usu"+"EL ROL ES $rol")
-                                if (rol == "2"){
-                                    println("usuario final $usu")
-                                    if (vendedor == usu) {
-                                        val productModel = ProductsModel(
-                                            vendedor,
-                                            idCliente,
-                                            descCliente,
-                                            idProducto,
-                                            descProducto,
-                                            marca,
-                                            tipo,
-                                            precio,
-                                            descuento,
-                                            tipoImpuesto,
-                                            tipoTarifa,
-                                            impuesto,
-                                            ventaTrim,
-                                            ventaAnt,
-                                            ventaAct,
-                                            bono,
-                                            minimo
-                                        )
-
-                                        productos.add(productModel)
-                                    }
-
-                                }
-
-                                else if (rol == "3"){
-
-                                    println("usuario final $usu")
-                                    if (vendedor == usu) {
-                                        val productModel = ProductsModel(
-                                            vendedor,
-                                            idCliente,
-                                            descCliente,
-                                            idProducto,
-                                            descProducto,
-                                            marca,
-                                            tipo,
-                                            precio,
-                                            descuento,
-                                            tipoImpuesto,
-                                            tipoTarifa,
-                                            impuesto,
-                                            ventaTrim,
-                                            ventaAnt,
-                                            ventaAct,
-                                            bono,
-                                            minimo
-                                        )
-
-                                        productos.add(productModel)
-                                    }
-                                }else if(rol == "4"){
-                                    println("rol es 4")
-
-                                    println("entre supervidor")
-                                    val productModel = ProductsModel(
-                                        vendedor,
-                                        idCliente,
-                                        descCliente,
-                                        idProducto,
-                                        descProducto,
-                                        marca,
-                                        tipo,
-                                        precio,
-                                        descuento,
-                                        tipoImpuesto,
-                                        tipoTarifa,
-                                        impuesto,
-                                        ventaTrim,
-                                        ventaAnt,
-                                        ventaAct,
-                                        bono,
-                                        minimo
-                                    )
-                                    productos.add(productModel)
-                                }
-
-                            }
-
-                            // De aquí en adelante, después de procesar todos los datos, crea el archivo CSV
-                            createProductCsv(productos)
-                            println("Se pudo")
-                            inicioSeccion()
-                            startActivity(intent)
-                            mostrarMensajeSubidaCompleta()
-
-
-                        } else {
-                            // Maneja el caso en el que el resultado no sea "Archivo encontrado"
-                        }
-                    } catch (e: JSONException) {
-                        // Maneja errores de análisis JSON
-                        e.printStackTrace()
-                    }
+                if (record.size >= 11) {
+                    val user = UsersModel(
+                        record[0],
+                        record[1],
+                        record[2],
+                        record[3],
+                        record[4],
+                        record[5],
+                        record[6],
+                        record[7],
+                        record[8],
+                        record[9],
+                        record[10]
+                    )
+                    usersList.add(user)
                 } else {
-                    // Manejar errores de respuesta
+                    println("Registro con formato incorrecto: ${record.joinToString(",")}")
                 }
             }
-
-            override fun onFailure(call: Call, e: IOException) {
-                // Manejar errores de conexión
+            csvReader.close()
+            for (use in usersList) {
+                println("wewona ${use.correo}")
             }
-        })
+        } catch (e: Exception) {
+            e.printStackTrace()
+            println("Error al leer el archivo CSV: ${e.message}")
+        }
     }
 
-    private fun createProductCsv(productos: MutableList<ProductsModel>) {
+    private fun sincronizarProducts() {
+        println("hola entre a sincor")
+        val url = "https://script.google.com/macros/s/AKfycbykgrf2MAkYOrlcgyupiA0laVPYM845yx0Tdj-qfFXcHeo7qwFNs_annyEzDwgY9UhF/exec?function=doGet&nombreArchivo=matrices_productos_precios$usuarioGitT"
+
+        runBlocking {
+            try {
+                val productos = fetchData(url)
+                createProductCsv(productos)
+
+                println("Se pudo productos")
+            } catch (e: Exception) {
+                // Manejar errores
+                e.printStackTrace()
+                mostrarMensajeSubidaCompleta()
+                println("no se pudo")
+            }
+        }
+    }
+
+    private suspend fun fetchData(url: String): List<ProductsModel> = withContext(Dispatchers.Default) {
+        val client = OkHttpClient()
+        val request = Request.Builder().url(url).build()
+
+        val response = client.newCall(request).execute()
+        if (response.isSuccessful) {
+            val responseBody = response.body?.string()
+            try {
+                val responseObject = JSONObject(responseBody)
+
+                if (responseObject.getString("resultado") == "Archivo encontrado") {
+                    val datosCSVArray = responseObject.getJSONArray("datosCSV")
+
+                    val datosCSVFormattedList = mutableListOf<List<String>>()
+                    for (i in 0 until datosCSVArray.length()) {
+                        val csvRowArray = datosCSVArray.getJSONArray(i)
+                        val csvRowList = mutableListOf<String>()
+
+                        for (j in 0 until csvRowArray.length()) {
+                            val csvCellValue = csvRowArray.getString(j).trim()
+                            csvRowList.add(csvCellValue)
+                        }
+
+                        if (csvRowList.isNotEmpty()) {
+                            datosCSVFormattedList.add(csvRowList)
+                        }
+                    }
+
+                    return@withContext filterProductsByRole(datosCSVFormattedList, rol.toString(), usu.toString())
+                } else {
+                    // Manejar el caso en que el resultado no sea "Archivo encontrado"
+                    throw Exception("Archivo no encontrado")
+                }
+            } catch (e: JSONException) {
+                // Manejar errores de análisis JSON
+                throw e
+            }
+        } else {
+            // Manejar errores de respuesta
+            throw IOException("Error en la solicitud")
+        }
+    }
+
+    // Función para filtrar productos según el rol
+    private fun filterProductsByRole(
+        datosCSVFormattedList: List<List<String>>,
+        rol: String,
+        usu: String
+    ): List<ProductsModel> {
+        println("hola entre a filter")
+
+        val productos = mutableListOf<ProductsModel>()
+
+        for (fila in datosCSVFormattedList) {
+            val vendedor = fila[0]
+            val idCliente = fila[1]
+            val descCliente = fila[2]
+            val idProducto = fila[3]
+            val descProducto = fila[4]
+            val marca = fila[5]
+            val tipo = fila[6]
+            val precio = fila[7]
+            val descuento = fila[8]
+            val tipoImpuesto = fila[9]
+            val tipoTarifa = fila[10]
+            val impuesto = fila[11]
+            val ventaTrim = fila[12]
+            val ventaAnt = fila[13]
+            val ventaAct = fila[14]
+            val bono = fila[15]
+            val minimo = fila[16]
+            val uc = fila[17]
+            val ordernar = fila[18]
+
+            if ((rol == "2" || rol == "3") && vendedor == usu || rol == "4") {
+                productos.add(
+                    ProductsModel(
+                        vendedor, idCliente, descCliente, idProducto, descProducto,
+                        marca, tipo, precio, descuento, tipoImpuesto, tipoTarifa,
+                        impuesto, ventaTrim, ventaAnt, ventaAct, bono, minimo, uc, ordernar
+                    )
+                )
+            }
+        }
+        println("ahead")
+
+        return productos
+    }
+    private fun createProductCsv(productos: List<ProductsModel>) {
         val fileName = "productos_$user.csv"
         val directory = applicationContext.filesDir
         val file = File(directory, fileName)
@@ -592,7 +609,9 @@ class InicioActivity : AppCompatActivity() {
                     product.venta_ant,
                     product.venta_act,
                     product.bono,
-                    product.minimo
+                    product.minimo,
+                    product.uc,
+                    product.ordernar
                 )
 
                 val productCsvRow = productFields.joinToString(",")
@@ -603,6 +622,8 @@ class InicioActivity : AppCompatActivity() {
             csvWriter.close()
 
             println("Archivo CSV creado en: $file")
+            sincronizarUsers()
+
             leerproducts()
         } catch (e: IOException) {
             e.printStackTrace()
@@ -642,17 +663,122 @@ class InicioActivity : AppCompatActivity() {
                     record[13],
                     record[14],
                     record[15],
-                    record[16]
+                    record[16],
+                    record[17],
+                    record[18]
                 )
 
                 productsList.add(product)
             }
-            println(productsList)
+            println(productsList.take(20))
 
             csvReader.close()
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+    private fun sincronizarProductsB() {
+        println("hola entre a sincor")
+        val url = "https://script.google.com/macros/s/AKfycbykgrf2MAkYOrlcgyupiA0laVPYM845yx0Tdj-qfFXcHeo7qwFNs_annyEzDwgY9UhF/exec?function=doGet&nombreArchivo=matrices_productos_precios$usuarioGitT"
+
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url(url)
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onResponse(call: Call, response: Response) {
+                response.body?.use { responseBody ->
+                    try {
+                        val responseObject = JSONObject(responseBody.string())
+
+                        if (responseObject.getString("resultado") == "Archivo encontrado") {
+                            val datosCSVArray = responseObject.getJSONArray("datosCSV")
+
+                            val datosCSVFormattedList = mutableListOf<List<String>>()
+                            for (i in 0 until datosCSVArray.length()) {
+                                val csvRowArray = datosCSVArray.getJSONArray(i)
+                                val csvRowList = mutableListOf<String>()
+
+                                for (j in 0 until csvRowArray.length()) {
+                                    val csvCellValue = csvRowArray.getString(j).trim()
+                                    csvRowList.add(csvCellValue)
+                                }
+
+                                if (csvRowList.isNotEmpty()) {
+                                    datosCSVFormattedList.add(csvRowList)
+                                }
+                            }
+
+                            val productos =
+                                filterProductsByRole(datosCSVFormattedList, rol.toString(), usu.toString())
+
+                            createProductCsv(productos)
+                            println("Se pudo")
+                            inicioSeccion()
+                            startActivity(intent)
+                            mostrarMensajeSubidaCompleta()
+
+                        } else {
+                            // Maneja el caso en el que el resultado no sea "Archivo encontrado"
+                        }
+                    } catch (e: JSONException) {
+                        // Maneja errores de análisis JSON
+                        e.printStackTrace()
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call, e: IOException) {
+                // Manejar errores de conexión
+            }
+        })
+    }
+
+    // Función para filtrar productos según el rol
+    private fun filterProductsByRoleB(
+        datosCSVFormattedList: List<List<String>>,
+        rol: String,
+        usu: String
+    ): List<ProductsModel> {
+        println("hola entre a filter")
+
+        val productos = mutableListOf<ProductsModel>()
+
+        for (fila in datosCSVFormattedList) {
+            val vendedor = fila[0]
+            val idCliente = fila[1]
+            val descCliente = fila[2]
+            val idProducto = fila[3]
+            val descProducto = fila[4]
+            val marca = fila[5]
+            val tipo = fila[6]
+            val precio = fila[7]
+            val descuento = fila[8]
+            val tipoImpuesto = fila[9]
+            val tipoTarifa = fila[10]
+            val impuesto = fila[11]
+            val ventaTrim = fila[12]
+            val ventaAnt = fila[13]
+            val ventaAct = fila[14]
+            val bono = fila[15]
+            val minimo = fila[16]
+            val uc = fila[17]
+            val ordernar = fila[18]
+
+            if ((rol == "2" || rol == "3") && vendedor == usu || rol == "4") {
+                productos.add(
+                    ProductsModel(
+                        vendedor, idCliente, descCliente, idProducto, descProducto,
+                        marca, tipo, precio, descuento, tipoImpuesto, tipoTarifa,
+                        impuesto, ventaTrim, ventaAnt, ventaAct, bono, minimo, uc, ordernar
+                    )
+                )
+            }
+        }
+        println("ahead")
+
+        return productos
     }
 
     private fun subirDrivePedido(){
@@ -701,7 +827,7 @@ class InicioActivity : AppCompatActivity() {
 
     }
     private fun mostrarMensajeSubidaCompleta() {
-        val snackbar = Snackbar.make(findViewById(android.R.id.content), "Subida completa", 5000) // Duración de 5 segundos
+        val snackbar = Snackbar.make(findViewById(android.R.id.content), "ERROR AL SINCRONIZAR, VOLVER A INTENTAR", 4000) // Duración de 5 segundos
         val view = snackbar.view
         val params = view.layoutParams as FrameLayout.LayoutParams
         params.gravity = Gravity.CENTER
@@ -819,5 +945,4 @@ class InicioActivity : AppCompatActivity() {
             println("Error al leer el archivo: ${e.message}")
         }
     }
-
 }

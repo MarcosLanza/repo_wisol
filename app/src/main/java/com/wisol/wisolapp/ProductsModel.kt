@@ -17,6 +17,16 @@ data class ProductsModel(
     val venta_ant: String,
     val venta_act: String,
     val bono: String,
-    val minimo: String
-)
+    val minimo: String,
+    val uc: String,
+    val ordernar:String
+){
+    override fun toString(): String {
+        return "ProductsModel(vendedor='$vendedor', idCliente='$id_cliente', descCliente='$desc_cliente', " +
+                "idProducto='$id_producto', descProducto='$desc_producto', marca='$marca', tipo='$tipo', " +
+                "precio='$precio', descuento='$descuento', tipoImpuesto='$tipo_impuesto', tipoTarifa='$tipo_tarifa', " +
+                "impuesto='$impuesto', ventaTrim='$venta_trim', ventaAnt='$venta_ant', ventaAct='$venta_act', " +
+                "bono='$bono', minimo='$minimo', uc='$uc')"
+    }
+}
 

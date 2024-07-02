@@ -4,13 +4,18 @@ package com.wisol.wisolapp
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputEditText
 import com.opencsv.CSVReader
 import okhttp3.Call
@@ -29,7 +34,7 @@ import java.util.Calendar
 class MainActivity : AppCompatActivity() {
 
     var nombreBuscado = ""
-    var passwordBuscada = ""
+    private var passwordBuscada = ""
     var passwordCodificado = ""
     var idUsuario : String? = ""
     var rol : String? = null
@@ -37,6 +42,8 @@ class MainActivity : AppCompatActivity() {
 
 
     val usersList = mutableListOf<UsersModel>()
+    private lateinit var swDarkMode: SwitchMaterial
+
 
 
 
@@ -47,6 +54,17 @@ class MainActivity : AppCompatActivity() {
         val btnStart = findViewById<Button>(R.id.btnStart)
         val inputName = findViewById<TextInputEditText>(R.id.inputUser)
         val inputPass = findViewById<TextInputEditText>(R.id.inputPass)
+        swDarkMode = findViewById(R.id.swDarkMode)
+        darkmode()
+        swDarkMode.setOnCheckedChangeListener { _, isSelected ->
+            if (isSelected){
+                enableDarkMode()
+            }else{
+                disableDarkMode()
+            }
+        }
+
+
         loco()
 
 
@@ -60,6 +78,36 @@ class MainActivity : AppCompatActivity() {
 
 
     }
+
+
+    private fun darkmode(){
+        // Verificar si el modo oscuro está activado
+        val isDarkModeEnabled = when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_YES -> true
+            else -> false
+        }
+
+        if (isDarkModeEnabled) {
+            println("modo oscuro defalut")
+            swDarkMode.isChecked = true
+        } else {
+            swDarkMode.isChecked = false
+            println("no modo oscuro defalut")
+
+            // El modo oscuro no está activado
+            // Puedes realizar acciones específicas para el modo claro aquí
+        }
+
+    }
+    private fun enableDarkMode(){
+        AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES)
+        delegate.applyDayNight()
+    }
+    private fun disableDarkMode(){
+        AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO)
+
+    }
+
     private fun conexionInternet(){
         if (isNetworkAvailable(this)) {
             println("hay internet")
@@ -191,7 +239,6 @@ class MainActivity : AppCompatActivity() {
                     val responseBody = response.body?.string()
                     // Procesar la respuesta JSON aquí
                     // responseBody contiene la respuesta JSON de la función doGet
-                    println("XD   " + responseBody)
 
                     try {
                         // Convierte la respuesta JSON en un objeto JSONObject
@@ -230,7 +277,7 @@ class MainActivity : AppCompatActivity() {
 
                                 println("Esta es la contraseña de la fila $password $passwordCodificado NOMBRE $nombreBuscado")
 
-                                if (usuario == nombreBuscado && password == passwordCodificado) {
+                                if (usuario.trim() == nombreBuscado.trim() && password.trim() == passwordCodificado.trim()) {
                                     roto = 2
 
                                     // Obtén el rol basado en la aplicación (funcionId)

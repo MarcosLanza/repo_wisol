@@ -14,27 +14,26 @@ import java.util.Locale
 
 class RecyclerViewAdapterProductos : RecyclerView.Adapter<RecyclerViewAdapterProductos.ViewHolder>() {
 
-    var productos: MutableList<ProductosModel> = ArrayList()
-    var filteredProductos: MutableList<ProductosModel> = ArrayList() // Lista filtrada
+    private var productos: MutableList<ProductosModel> = ArrayList()
+    private var filteredProductos: MutableList<ProductosModel> = ArrayList()
 
-    lateinit var filtro: String
+    private lateinit var filtro: String
 
     lateinit var context: Context
     var idP = ""
-    var rito = 0
+    private var rito = 0
     var num = 0.0
     var total = 0.0
 
-    var selectedItems: MutableList<ProductosModel> = ArrayList() // Lista para rastrear elementos seleccionados
+    var selectedItems: MutableList<ProductosModel> = ArrayList()
 
     init {
-        filteredProductos = productos // Inicializa la lista filtrada con todos los productos
+        filteredProductos = productos
     }
 
     fun RecyclerViewAdapter(productos: MutableList<ProductosModel>, context: Context) {
         this.productos = productos
-        this.filteredProductos = productos // Inicializa la lista filtrada con todos los productos
-
+        this.filteredProductos = productos
         this.context = context
     }
 
@@ -43,34 +42,22 @@ class RecyclerViewAdapterProductos : RecyclerView.Adapter<RecyclerViewAdapterPro
         applyFilter(filtro)
     }
 
-    fun applyFilter(newFilter: String) {
+    private fun applyFilter(newFilter: String) {
         filtro = newFilter
         filteredProductos = productos.filter { it.desc_producto.contains(filtro, ignoreCase = true) }.toMutableList()
         notifyDataSetChanged()
     }
+
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val producto: TextView
-        val cnt: TextView
-        val bono: TextView
-        val id_producto: TextView
-        val precio : TextView
-        val descuento : TextView
-        val precioT : TextView
-        val impuesto : TextView
-
-
-        init {
-
-            producto = view.findViewById(R.id.txtNameProducto)
-            cnt = view.findViewById(R.id.txtCNTProdcuto)
-            bono = view.findViewById(R.id.txtProductoBono)
-            id_producto = view.findViewById(R.id.txtProductoCodigo)
-            precio = view.findViewById(R.id.txtProductoPrecio)
-            descuento = view.findViewById(R.id.txtProductoDescuento)
-            precioT = view.findViewById(R.id.txtProductoPrecioP)
-            impuesto = view.findViewById(R.id.txtProductoImpuestoto)
-
-        }
+        val producto: TextView = view.findViewById(R.id.txtNameProducto)
+        val cnt: TextView = view.findViewById(R.id.txtCNTProdcuto)
+        val bono: TextView = view.findViewById(R.id.txtProductoBono)
+        val id_producto: TextView = view.findViewById(R.id.txtProductoCodigo)
+        val precio: TextView = view.findViewById(R.id.txtProductoPrecio)
+        val descuento: TextView = view.findViewById(R.id.txtProductoDescuento)
+        val precioT: TextView = view.findViewById(R.id.txtProductoPrecioP)
+        val impuesto: TextView = view.findViewById(R.id.txtProductoImpuestoto)
+        val uc: TextView = view.findViewById(R.id.txtUC)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -79,159 +66,109 @@ class RecyclerViewAdapterProductos : RecyclerView.Adapter<RecyclerViewAdapterPro
     }
 
     override fun getItemCount(): Int {
-        return filteredProductos.size // Usar la lista filtrada en lugar de la lista original
+        return filteredProductos.size
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        // Configuración de las filas de datos
         val isEvenRow = position % 2 == 0
+        val producto = filteredProductos[position]
 
-        if (isEvenRow) {
-            holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.white1))
-        } else {
-            holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.grey)) // Cambiar al color deseado
-        }
+        holder.itemView.setBackgroundColor(
+            ContextCompat.getColor(
+                context,
+                if (isEvenRow) R.color.white1 else R.color.grey
+            )
+        )
 
         val formato = NumberFormat.getNumberInstance(Locale.getDefault())
-
-        val producto = filteredProductos[position]
-        println("las lista es $filteredProductos")
         holder.producto.text = producto.desc_producto
         holder.cnt.text = producto.cnt
         holder.id_producto.text = producto.id_producto
         holder.precio.text = formato.format(producto.precio.toDouble())
         holder.descuento.text = producto.descuento
         holder.impuesto.text = producto.impuesto
-        val she = producto.bonoT
-        println("se estra $she")
-
+        holder.uc.text = producto.uc
         holder.bono.text = producto.bonoT
         holder.precioT.text = producto.precioTotal
-
         holder.producto.setTextColor(ContextCompat.getColor(context, android.R.color.black))
         holder.cnt.setTextColor(ContextCompat.getColor(context, android.R.color.black))
         holder.bono.setTextColor(ContextCompat.getColor(context, android.R.color.black))
-
-
-        holder.cnt.tag = position // Almacena la posición en lugar de una etiqueta de texto
+        holder.cnt.tag = position
 
         holder.cnt.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                // Este método se llama antes de que el texto cambie
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // Este método se llama cuando el texto está cambiando
                 val newText = s.toString()
-                // Obtener la posición del elemento en lugar de la etiqueta
                 val itemPosition = holder.cnt.tag as Int
                 try {
-                    if (newText != "" && newText != "0") {
-
-                        num = (newText.toDouble() / producto.minimo.toDouble())
-                        println("este es el nium $num")
+                    if (newText.isNotEmpty() && newText != "0") {
+                        num = newText.toDouble() / producto.minimo.toDouble()
                         val esEntero = num == num.toInt().toDouble()
                         if (esEntero) {
-                            if (num != 0.0){
+                            if (num != 0.0) {
                                 val hola = producto.bono.toDouble()
-                                num = num*hola
-                                println("hi $num")
+                                num *= hola
                                 holder.bono.text = String.format("%.1f", num)
-                                holder.bono.setBackgroundColor(
-                                    ContextCompat.getColor(
-                                        context,
-                                        R.color.green
-                                    )
-                                ) // Cambiar al color deseado
-
-
+                                holder.bono.setBackgroundColor(ContextCompat.getColor(context, R.color.green))
                             }
-
-                        }
-                        else{
+                        } else {
                             val hola = producto.bono.toDouble()
-                            num = num*hola
-                            println("hi ${producto.minimo}")
-                            if (producto.minimo == "0"){
+                            num *= hola
+                            if (producto.minimo == "0") {
                                 holder.bono.text = "0"
-
-                                holder.bono.setBackgroundColor(
-                                    ContextCompat.getColor(
-                                        context,
-                                        R.color.red
-                                    ))
-
-                            }else{
+                                holder.bono.setBackgroundColor(ContextCompat.getColor(context, R.color.red))
+                            } else {
                                 holder.bono.text = String.format("%.1f", num)
-                                holder.bono.setBackgroundColor(
-                                    ContextCompat.getColor(
-                                        context,
-                                        R.color.red
-                                    ))
+                                holder.bono.setBackgroundColor(ContextCompat.getColor(context, R.color.red))
                             }
-
                         }
-                        // holder.precioT.text = ((producto.precio.toDouble() - (producto.precio.toDouble()*(producto.desc_producto.toDouble()/100)))*3).toString()
-
                         val productoPrecio = producto.precio.toDouble()
                         val descuentoP = producto.descuento.toDouble()
-                        total = productoPrecio-(productoPrecio*(descuentoP/100))
-                        total = total* newText.toDouble()
+                        total = productoPrecio - (productoPrecio * (descuentoP / 100))
+                        total *= newText.toDouble()
                         holder.precioT.text = formato.format(total)
-                        for(pro in selectedItems){
-                            if (idP == pro.id_producto){
+                        for (pro in selectedItems) {
+                            if (idP == pro.id_producto) {
                                 pro.precioTotal = total.toString()
                                 pro.bonoT = holder.bono.text.toString()
-                                println("total $total")
-
                             }
-
                         }
-
-
-                    } else if (newText == "") {
+                    } else if (newText.isEmpty()) {
                         holder.bono.text = "0"
-                        holder.bono.setBackgroundColor(ContextCompat.getColor(context, R.color.grey)) // Cambiar al color deseado
-
+                        holder.bono.setBackgroundColor(ContextCompat.getColor(context, R.color.grey))
                     }
                 } catch (e: ArithmeticException) {
-                    // Manejo de la excepción (división por cero)
-                    // Puedes mostrar un mensaje de error o tomar alguna otra acción apropiada
                     holder.bono.text = "0"
                 }
-                // Notificar a la actividad principal con el identificador único y el nuevo texto
                 (context as? SeleccionProductoActivity)?.onEditTextChanged(itemPosition, newText)
-                for (i in 0 until selectedItems.size) {
+                for (i in selectedItems.indices) {
                     if (selectedItems[i].id_producto == idP && newText != "0") {
-                        selectedItems[i].cnt = newText // Reemplazar el elemento
+                        selectedItems[i].cnt = newText
                         (context as? SeleccionProductoActivity)?.save(selectedItems)
-                        println("Sí llegué aquí")
-                        break // Salir del bucle una vez que se haya realizado la edición
+                        break
                     }
                 }
             }
 
-            override fun afterTextChanged(s: Editable?) {
-                // Este método se llama después de que el texto cambie
-            }
+            override fun afterTextChanged(s: Editable?) {}
         })
 
-        // Configuración de la selección de elementos
-        // Cambiar el color de fondo de acuerdo a si el elemento está seleccionado
         if (selectedItems.contains(producto)) {
             holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.green))
         } else {
-            if (isEvenRow) {
-                holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.white1))
-            } else {
-                holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.grey)) // Cambiar al color deseado
-            }
-            if (producto.cnt != "0" && producto.cnt != "" && rito == 0) {
+            holder.itemView.setBackgroundColor(
+                ContextCompat.getColor(
+                    context,
+                    if (isEvenRow) R.color.white1 else R.color.grey
+                )
+            )
+            if (producto.cnt != "0" && producto.cnt.isNotEmpty() && rito == 0) {
                 rito = 1
                 for (uso in productos) {
                     if (uso.cnt != "0") {
                         selectedItems.add(uso)
-                        holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.green)) // Cambiar al color deseado
+                        holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.green))
                         (context as? SeleccionProductoActivity)?.save(selectedItems)
                         (context as? SeleccionProductoActivity)?.reportes(selectedItems)
                     }
@@ -239,37 +176,53 @@ class RecyclerViewAdapterProductos : RecyclerView.Adapter<RecyclerViewAdapterPro
             }
         }
 
-        // Manejar la lógica de selección/deselección aquí
         holder.itemView.setOnClickListener {
             if (selectedItems.contains(producto)) {
-                // Si el elemento ya está seleccionado, deseléccionalo
                 selectedItems.remove(producto)
                 (context as? SeleccionProductoActivity)?.reportes(selectedItems)
-                holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.red))
-                println("Elementos deseleccionados en la posición $position: $selectedItems")
-                holder.cnt.text = "0"
+                var cantidad = holder.cnt.text.toString()
+                println("el elemnot deseleccionad es $cantidad")
+                if (cantidad != "0"){
+                    holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.blue))
+                    holder.bono.setBackgroundColor(ContextCompat.getColor(context, R.color.blue))
 
-                holder.bono.text = String.format("%.1f", num)
-                holder.bono.setBackgroundColor(
-                    ContextCompat.getColor(
-                        context,
-                        R.color.green
-                    )
-                ) // Cambiar al color deseado
+
+                }else{
+                    if (isEvenRow) {
+                        holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.white1))
+                        holder.bono.setBackgroundColor(ContextCompat.getColor(context, R.color.white1))
+
+                    } else {
+                        holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.grey)) // Cambiar al color deseado
+                        holder.bono.setBackgroundColor(ContextCompat.getColor(context, R.color.grey))
+
+                    }
+                }
+
+
+
+
+                for (pts in selectedItems) {
+                    holder.cnt.text = if (idP == pts.id_producto) "0" else "0"
+                }
+                holder.bono.text = "0"
+
+
+                //  holder.bono.setBackgroundColor(ContextCompat.getColor(context, R.color.green))
             } else {
-                // Si el elemento no está seleccionado, selecciónalo
                 selectedItems.add(producto)
-
                 (context as? SeleccionProductoActivity)?.reportes(selectedItems)
-                holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.blue))
+                holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.green))
+                holder.bono.setBackgroundColor(ContextCompat.getColor(context, R.color.green))
+
                 idP = producto.id_producto
-                println("id es = $idP")
-                holder.cnt.text = "0"
+                for (pts in selectedItems) {
+                    holder.cnt.text = if (idP == pts.id_producto) pts.cnt else "0"
+                }
             }
-            // Notificar cambios en la selección
-            notifyItemChanged(position)
         }
     }
+
     fun resetFilter() {
         filteredProductos = productos
         notifyDataSetChanged()

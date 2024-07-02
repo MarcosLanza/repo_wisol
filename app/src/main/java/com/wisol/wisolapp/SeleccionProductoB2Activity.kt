@@ -365,7 +365,7 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
         val hora = calendario.get(Calendar.HOUR_OF_DAY)
         val minutos = calendario.get(Calendar.MINUTE)
         val segundos = calendario.get(Calendar.SECOND)
-        val año = calendario.get(Calendar.YEAR)
+        val anno = calendario.get(Calendar.YEAR)
         val mes = calendario.get(Calendar.MONTH) + 1  // Los meses comienzan desde 0, por lo que sumamos 1
         val dia = calendario.get(Calendar.DAY_OF_MONTH)
         contador = 1
@@ -381,7 +381,7 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
 
 
             }
-            lista.fecha = "$dia/$mes/$año"
+            lista.fecha = "$dia/$mes/$anno"
             println("Hola comentaRIO"+textol)
 
         }
@@ -444,15 +444,20 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
                         record[13],
                         record[14],
                         record[15],
-                        record[16]
+                        record[16],
+                        record[17],
+                        record[18]
                     )
                     if(product.tipo == "DEVOLUCION"){
                         if (product.id_cliente == idProducto && filtro == null) {
+                            arrayList.sortWith(compareBy { it.ordernar })
+
                             addProduct(arrayList, product)
                         } else if (product.id_cliente == idClient && filtro == null) {
                             idProducto = null
                             geto()
                             updateProductCounts(arrayList)
+                            arrayList.sortWith(compareBy { it.ordernar })
 
                             addProduct(arrayList, product)
                             contador =1
@@ -460,6 +465,8 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
                         } else if (filtro != null) {
                             println("entre al filtro $filtro")
                             if (product.desc_producto.contains(filtro!!, ignoreCase = true)) {
+                                arrayList.sortWith(compareBy { it.ordernar })
+
                                 addProduct(arrayList, product)
                             }
                         }
@@ -503,7 +510,9 @@ class SeleccionProductoB2Activity : AppCompatActivity() {
                 codigo_producto = product.id_producto,
                 comentario = "",
                 precioTotal = "0",
-                bonoT = "0"
+                bonoT = "0",
+                uc = product.uc,
+                ordernar = product.ordernar
 
             )
         )

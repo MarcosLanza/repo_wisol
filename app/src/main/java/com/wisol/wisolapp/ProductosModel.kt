@@ -26,6 +26,8 @@ data class ProductosModel(val vendedor: String,
                           val numPedido:String,
                           var precioTotal: String,
                           var bonoT:String,
+                          var uc:String,
+                          val ordernar:String
 )
 
 

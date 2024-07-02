@@ -26,20 +26,21 @@
                 app:cardBackgroundColor="@color/nabvar">
 
                 <ImageView
-                    android:id="@+id/imclogo1"
+                    android:id="@+id/ic"
                     android:layout_width="200dp"
                     android:layout_height="match_parent"
                     android:layout_gravity="start|center_vertical"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
-                    android:src="@drawable/ic_logo1" />
+                    android:src="@drawable/ic_wisol_logo" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="50dp"
                     android:layout_gravity="end|center_vertical"
                     android:layout_margin="35dp"
+                    style="@style/ButtonTitle"
 
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="50dp"
@@ -56,8 +57,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginVertical="16dp"
-                android:backgroundTint="@color/blue"
                 android:text="Pedidos"
+                style="@style/ButtonTitle2"
                 app:cornerRadius="10dp"
                 app:iconTint="@android:color/white" />
             <Button
@@ -66,12 +67,19 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="35dp"
+                style="@style/ButtonTitle4"
 
                 android:layout_marginVertical="16dp"
-                android:backgroundTint="@color/pilot"
                 android:text="Sincronizar APP"
                 app:cornerRadius="10dp"
                 app:iconTint="@android:color/white" />
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="invisible">
+
+            </ProgressBar>
 
             <Button
                 android:id="@+id/btnNewClient"
@@ -79,9 +87,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="35dp"
+                style="@style/ButtonTitle2"
 
                 android:layout_marginVertical="16dp"
-                android:backgroundTint="@color/blue"
                 android:text="Nuevo Cliente"
                 app:cornerRadius="10dp"
                 app:iconTint="@android:color/white" />
@@ -93,8 +101,9 @@
                 android:layout_gravity="center"
                 android:layout_margin="35dp"
                 android:layout_marginVertical="16dp"
-                android:backgroundTint="@color/blue"
                 android:text="Subir Pedido"
+                style="@style/ButtonTitle2"
+
                 app:cornerRadius="10dp"
                 app:iconTint="@android:color/white" />
 
@@ -108,22 +117,45 @@
                 android:layout_gravity="center"
                 android:layout_margin="35dp"
                 android:src="@drawable/ic_sicronizar"
-                app:backgroundTint="@color/blue"
                 app:cornerRadius="0dp"
                 app:tint="@color/white" />
 
-            <Button
-                android:id="@+id/btnOut"
+            <LinearLayout
                 android:layout_width="400dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginVertical="16dp"
-                android:backgroundTint="@color/blue"
-                android:layout_margin="35dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginVertical="40dp"
+                android:orientation="horizontal">
 
-                android:text="Salir"
-                app:cornerRadius="10dp"
-                app:iconTint="@android:color/white" />
+                <Button
+                    android:id="@+id/btncerrar"
+                    android:layout_width="145dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    style="@style/ButtonTitle2"
+                    android:text="Inicio Sesión"
+                    app:cornerRadius="10dp"
+                    android:layout_marginEnd="10dp"
+
+                    app:iconTint="@android:color/white" />
+
+                <Button
+                    android:id="@+id/btnOut"
+                    android:layout_width="145dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    style="@style/ButtonTitle2"
+                    android:text="Cerrar Sesión"
+                    android:layout_marginEnd="10dp"
+
+                    app:cornerRadius="10dp"
+                    app:iconTint="@android:color/white" />
+
+            </LinearLayout>
+
+
+
+
 
 
         </androidx.appcompat.widget.LinearLayoutCompat>

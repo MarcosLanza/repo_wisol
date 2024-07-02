@@ -35,7 +35,7 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
-                    android:src="@drawable/ic_logo1" />
+                    android:src="@drawable/ic_wisol_logo" />
 
                 <TextView
                     android:layout_width="160dp"
@@ -45,6 +45,8 @@
                     android:layout_marginEnd="50dp"
                     android:layout_marginBottom="8dp"
                     android:text="Seleccionar Cliente"
+                    style="@style/ButtonTitle"
+
                     android:textSize="30dp"
                     android:textStyle="bold" />
 
@@ -53,7 +55,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="600dp"
+                android:layout_height="900dp"
                 android:orientation="vertical"
                 android:layout_margin="16dp">
 
@@ -86,15 +88,12 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
 
-
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerViewC"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:scrollbars="vertical" />
-
-
 
 
             </LinearLayout>
@@ -111,11 +110,10 @@
                     android:layout_width="170dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_margin="10dp"
                     android:layout_marginVertical="16dp"
-                    android:backgroundTint="@color/blue"
                     android:text="Atrás"
                     app:cornerRadius='10dp'
+                    style="@style/ButtonTitle2"
 
                     app:iconTint="@android:color/white" />
 
@@ -124,11 +122,11 @@
                     android:layout_width="170dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_margin="10dp"
+                    android:layout_margin="16dp"
                     android:layout_marginVertical="16dp"
-                    android:backgroundTint="@color/blue"
                     android:text="Limpiar"
                     app:cornerRadius='10dp'
+                    style="@style/ButtonTitle2"
 
                     app:iconTint="@android:color/white" />
 
@@ -138,9 +136,9 @@
                     android:layout_width="170dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginVertical="16dp"
+                    android:layout_marginVertical="10dp"
 
-                    android:backgroundTint="@color/blue"
+                    style="@style/ButtonTitle2"
                     android:text="Siguiente"
                     app:cornerRadius='10dp'
 

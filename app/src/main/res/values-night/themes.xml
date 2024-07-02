@@ -4,4 +4,38 @@
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
     </style>
+    <style name="ButtonTitle">
+        <item name="android:textColor">
+            @color/white
+        </item>
+    </style>
+    <style name="ButtonTitle2">
+        <item name="android:textColor">
+            @color/white
+        </item>
+        <item name="android:backgroundTint">#009688</item>
+
+    </style>
+    <style name="ButtonTitle3">
+        <item name="android:textColor">
+            @color/white
+        </item>
+        <item name="android:backgroundTint">#009688</item>
+
+    </style>
+    <style name="ButtonTitle4">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:backgroundTint">#A79970</item>
+
+    </style>
+
+    <style name="Encabezado">
+        <item name="android:textColor">
+            @color/white
+        </item>
+       <item name="android:background">
+           #009688
+       </item>
+    </style>
+
 </resources>

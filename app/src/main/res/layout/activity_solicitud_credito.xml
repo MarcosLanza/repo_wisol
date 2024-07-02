@@ -38,7 +38,7 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
-                    android:src="@drawable/ic_logo1" />
+                    android:src="@drawable/ic_wisol_logo" />
 
                 <TextView
                     android:id="@+id/textViewTitulo"
@@ -351,6 +351,7 @@
                   android:layout_height="70dp"
                   android:onClick="onAdjuntarImagenClick"
                   android:layout_marginHorizontal="@android:dimen/app_icon_size"
+                  style="@style/ButtonTitle"
 
                   android:text="Atrás"
                   android:backgroundTint="@color/blue"
@@ -367,6 +368,8 @@
                   android:onClick="onAdjuntarImagenClick"
                   android:layout_marginHorizontal="@android:dimen/app_icon_size"
                   android:text="Guardar"
+                  style="@style/ButtonTitle"
+
                   android:backgroundTint="@color/blue"
                   app:layout_constraintEnd_toEndOf="parent"
                   app:layout_constraintStart_toStartOf="parent"

@@ -218,7 +218,9 @@ class SeleccionClienteActivity : AppCompatActivity() {
                     record[13],
                     record[14],
                     record[15],
-                    record[16]
+                    record[16],
+                    record[17],
+                    record[18]
                 )
 
 

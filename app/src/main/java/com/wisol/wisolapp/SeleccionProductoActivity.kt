@@ -1,5 +1,6 @@
 package com.wisol.wisolapp
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -7,6 +8,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -40,12 +42,18 @@ class SeleccionProductoActivity : AppCompatActivity() {
     var comentarioB: String? = ""
     var user = ""
     var bako = 0
+    var alerta = 0
+    var alerta2 = 0
+
+
     var idClient = ""
     var selectedItemsA: MutableList<ProductosModel> = ArrayList() // Lista para rastrear elementos seleccionados
     var selectedItemsB: MutableList<ProductosModel> = ArrayList() // Lista para rastrear elementos seleccionados
     //esta lista es para ver los reportes
     var selectedItemsC: MutableList<ProductosModel> = ArrayList() // Lista para rastrear elementos seleccionados
     val arrayList: MutableList<ProductosModel> = ArrayList()
+    val listaAsterisgo: MutableList<ProductosModel> = ArrayList()
+
 
     private lateinit var promedioTrim:TextView
     private lateinit var mesAnterior:TextView
@@ -59,6 +67,7 @@ class SeleccionProductoActivity : AppCompatActivity() {
 
 
 
+    var contadorP = 0
 
     var cntGlobal = 0
     var minimo = 0
@@ -206,6 +215,86 @@ class SeleccionProductoActivity : AppCompatActivity() {
         }
     }
 
+    private fun alertados(){
+        contadorP = 0
+
+        for (producto in arrayList){
+            if (producto.uc.trim() == "-".trim()){}
+
+            else{
+                if (producto.uc == "*"){
+                    contadorP += 1
+                    listaAsterisgo.add(producto)
+                    println("el contador es: "+contadorP)
+                }
+            }
+
+
+
+        }
+        if (contadorP != 0){
+            comparacionListas()
+            println("lista asterisgo "+listaAsterisgo)
+        }
+    }
+    private fun comparacionListas(){
+        var totalListaA = 0
+        if (selectedItemsA.isEmpty()){
+            alerta = 1
+            println("lista vacia")
+            cambioPage()
+        }else{
+            for (listaA in selectedItemsA){
+                val idProductoM = listaA.id_producto
+                for (listaB in listaAsterisgo){
+                    val idProductoN = listaB.id_producto
+                    if (idProductoN.trim() == idProductoM.trim()){
+                        contadorP-=1
+                        println("el nuevo contador "+contadorP)
+                    }
+                }
+            }
+            if (contadorP ==0){
+                contadorP = 0
+                alerta = 1
+
+            }else{
+                alerta = 1
+                mostrarAlertaConOpciones()
+
+            }
+        }
+    }
+
+
+    private fun mostrarAlertaConOpciones() {
+        val builder = AlertDialog.Builder(this)
+        val inflater = layoutInflater
+        val dialogView = inflater.inflate(R.layout.dialog_custom_alert, null)
+
+        val imageViewIcon = dialogView.findViewById<ImageView>(R.id.imageViewIcon)
+        val textViewMessage = dialogView.findViewById<TextView>(R.id.textViewMessage)
+
+        imageViewIcon.setImageResource(R.drawable.ic_alert) // Reemplaza ic_alert con el nombre de tu icono
+        textViewMessage.text = "Existen productos con muchos días sin pedido."
+
+        builder.setView(dialogView)
+            .setPositiveButton("Continuar a Devoluciones") { dialog, _ ->
+                // Código a ejecutar al hacer clic en Aceptar
+                cambioPage()
+                dialog.dismiss()
+            }
+            .setNegativeButton("Volver a Pedidos") { dialog, _ ->
+                // Código a ejecutar al hacer clic en Cancelar
+                dialog.dismiss()
+                contadorP = 0
+
+            }
+            .create()
+            .show()
+    }
+
+
     private fun changeViewPro(){
 
         if (change == "si"){
@@ -215,18 +304,23 @@ class SeleccionProductoActivity : AppCompatActivity() {
 
 
         }else{
-            val intent = Intent(this, SeleccionProductoB2Activity::class.java)
-            intent.putExtra("ID_ProductoB", idProducto)
-            intent.putExtra("ID_ClientB", idClient)
-            intent.putExtra("ID_PedidoB", idPedidoFinal)
-            val toy = comentario.text
-            intent.putExtra("Comentarios", "$toy")
-
-            println("hola comentario THE "+ toy)
-            intent.putExtra("CambioB", changeA)
-            startActivity(intent)
+            alertados()
+            if (alerta != 1){
+                cambioPage()
+            }
         }
 
+    }
+    private fun cambioPage(){
+        val intent = Intent(this, SeleccionProductoB2Activity::class.java)
+        intent.putExtra("ID_ProductoB", idProducto)
+        intent.putExtra("ID_ClientB", idClient)
+        intent.putExtra("ID_PedidoB", idPedidoFinal)
+        val toy = comentario.text
+        intent.putExtra("Comentarios", "$toy")
+        println("hola comentario THE "+ toy)
+        intent.putExtra("CambioB", changeA)
+        startActivity(intent)
     }
     private fun navigateToSaveProduct(){
         if (contador == 1){
@@ -372,7 +466,7 @@ class SeleccionProductoActivity : AppCompatActivity() {
         val hora = calendario.get(Calendar.HOUR_OF_DAY)
         val minutos = calendario.get(Calendar.MINUTE)
         val segundos = calendario.get(Calendar.SECOND)
-        val año = calendario.get(Calendar.YEAR)
+        val anno = calendario.get(Calendar.YEAR)
         val mes = calendario.get(Calendar.MONTH) + 1  // Los meses comienzan desde 0, por lo que sumamos 1
         val dia = calendario.get(Calendar.DAY_OF_MONTH)
        contador = 1
@@ -386,7 +480,7 @@ class SeleccionProductoActivity : AppCompatActivity() {
                 lista.idPedido = "$idPedidoFinal"
                 println("no, es nulo $idPedidoFinal")
             }
-            lista.fecha = "$dia/$mes/$año"
+            lista.fecha = "$dia/$mes/$anno"
             println("Hola comentaRIO"+textol)
 
         }
@@ -443,15 +537,20 @@ class SeleccionProductoActivity : AppCompatActivity() {
                         record[13],
                         record[14],
                         record[15],
-                        record[16]
+                        record[16],
+                        record[17],
+                        record[18]
                     )
                     if(product.tipo == "TERMINADO"){
                         if (product.id_cliente == idProducto && filtro == null) {
+                            arrayList.sortWith(compareBy { it.ordernar })
                             addProduct(arrayList, product)
                             slogan.text = product.desc_cliente
                         } else if (product.id_cliente == idClient && filtro == null) {
                             bako = 1
                             idProducto = null
+                            arrayList.sortWith(compareBy { it.ordernar })
+
                             addProduct(arrayList, product)
 
                             geto()
@@ -469,6 +568,8 @@ class SeleccionProductoActivity : AppCompatActivity() {
                             println("entre al filtro $filtro")
                             if (product.desc_producto.contains(filtro!!, ignoreCase = true)) {
                                 slogan.text = product.desc_cliente
+                                arrayList.sortWith(compareBy { it.ordernar })
+
                                 addProduct(arrayList, product)
                             }
                         }
@@ -512,6 +613,8 @@ class SeleccionProductoActivity : AppCompatActivity() {
                 comentario = "",
                 precioTotal = "0",
                 bonoT = "0",
+                uc = product.uc,
+                ordernar = product.ordernar
 
 
             )

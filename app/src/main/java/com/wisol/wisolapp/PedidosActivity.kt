@@ -303,6 +303,8 @@ class PedidosActivity : AppCompatActivity() {
                 // Crea una lista de pedidos
                 val arrayList: MutableList<PedidosModel> = ArrayList()
                 var arrayListN: MutableList<PedidosModel> = ArrayList()
+                var listaNo: MutableList<PedidosModel> = ArrayList()
+
 
 
 
@@ -348,8 +350,9 @@ class PedidosActivity : AppCompatActivity() {
                     arrayListN = arrayList
                     val recycler : RecyclerView = findViewById(R.id.recyclerView)
                     val adapter : RecyclerViewAdapter = RecyclerViewAdapter()
+                    listaNo = arrayListN.distinctBy { Pair(it.idPedido, it.codigo_producto) }.toMutableList()
 
-                    adapter.RecyclerViewAdapter(arrayListN, this)
+                    adapter.RecyclerViewAdapter(listaNo, this)
 
                     recycler.hasFixedSize()
                     recycler.adapter = adapter
